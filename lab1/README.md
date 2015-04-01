@@ -26,15 +26,15 @@ CUDA program consists of serial code performed on the host (CPU and computer mem
 
 ### Terminology
 
-**Host**- the CPU and its memory
+**Host**- the CPU and its memory;
 
-**Device**- the GPU and its memory
+**Device**- the GPU and its memory;
 
-**Kernel** - code that is performed by a single GPU processor
+**Kernel** - code that is performed by a single GPU processor;
 
-**Multiprocessor (Streaming Multiprocessor)**- a group of GPU processors that can synchronize between each other. They usually share some part of the memory and share cache of global device memory. Current GPUs have few SMs.
+**Multiprocessor (Streaming Multiprocessor)**- a group of GPU processors that can synchronize between each other. They usually share some part of the memory and share cache of global device memory. Current GPUs have few SMs;
 
-**Thread**- a single instance of executing kernel
+**Thread**- a single instance of executing kernel;
 
 **Work-group (block)** - a logical group of threads working on a single multiprocessor in parallel.
 
@@ -44,15 +44,15 @@ CUDA program consists of serial code performed on the host (CPU and computer mem
 
 GPU has following memory types:
 
-* **global device memory** (read/write for all threads, cached, high latency (200 cycles compared to 4 cycles of aritmetic operation), relatively large (GTX 470 - 1G))
+* **global device memory** (read/write for all threads, cached, high latency (200 cycles compared to 4 cycles of aritmetic operation), relatively large (GTX 470 - 1G));
 
-* **shared block memory** (read/write for threads in the block, fast but small - GTX 470 - 48 KB)
+* **shared block memory** (read/write for threads in the block, fast but small - GTX 470 - 48 KB);
 
-* **thread private memory** (read/write for the thread, very fast but small - like processor registers)
+* **thread private memory** (read/write for the thread, very fast but small - like processor registers);
 
-* **constants memory** (read for all threads, optimized for cuncurrent read, size: 64 KB)
+* **constants memory** (read for all threads, optimized for cuncurrent read, size: 64 KB);
 
-* **textures memory** (read only, offers different addressing, filtering for specific data)
+* **textures memory** (read only, offers different addressing, filtering for specific data).
 
 Figure below shows a rough comparison of CPU and GPU memory structures.
 
@@ -90,7 +90,7 @@ You can use any CUDA supported graphics card. Most of recent NVIDIA cards (even 
 
 For instructions on how to install CUDA toolkit visit: [http://docs.nvidia.com/cuda/index.html#getting-started-guides](http://docs.nvidia.com/cuda/index.html#getting-started-guides)
 
-CUDA toolkit should be already installed on lab computers and on nvidia1 and nvidia2 hosts. The installation directory on nvidia hosts is `/usr/local/cuda-7.0/`, in labs it is `/opt/cuda-7.0/`.
+CUDA toolkit should be already installed on lab computers and on nvidia1 and nvidia2 hosts. The installation directory on nvidia hosts is `/usr/local/cuda/`, in labs it is `/opt/cuda/`.
 
 We use nvcc CUDA compiler, see Makefiles of examples for details.
 
@@ -110,7 +110,7 @@ Compile the code of `1_Utilities/deviceQuery` example using make. Run the progra
 
 3. Delete the line `__syncthreads()` in `1dStencil2.cu`. What has changed in the result? Can you explain what `__syncthreads()` does?
 
-### 2d Stencil (2 points)
+### 2d Stencil (1 point)
 
 Write your solution to 2d Stencil problem using CUDA platform. In 2d version input `X` and output `Y` are matrices. Output matrix `Y` is defined as `Y(i, j)` = sum of elements of `X` with index `(k, l)` s.t. `i - D < k < i + D` and `j - D < l < j + D`.
 
