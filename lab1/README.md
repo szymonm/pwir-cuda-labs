@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**Compute Unified Device Architecture (CUDA)**is a parallel computing plaform and programming model created by NVIDIA to allow use of GPUs for general purpose processing (not exclusively graphics).
+**Compute Unified Device Architecture (CUDA)** is a parallel computing plaform and programming model created by NVIDIA to allow use of GPUs for general purpose processing (not exclusively graphics).
 
 Unlike traditional CPUs, GPUs are processors specialized for compute-intense, high parallel computation. More specifically, GPU is particullary efective for problems that can be solved by data-parallel computations, i.e., programs that run the same code in parallel on different pieces of data. On the other hand, GPUs are not the best choice for realization of compuations that pose sophistacated flow control or operate on large amounts of data. To this end, CUDA platform may be viewed as a realization of PRAM model (but the differences we cover later).
 
@@ -30,11 +30,11 @@ CUDA program consists of serial code performed on the host (CPU and computer mem
 
 **Device**- the GPU and its memory
 
-**Kernel** - code that is performed by a single GPU processor (thread)
+**Kernel** - code that is performed by a single GPU processor
 
-**Multiprocessor**- a group of GPU processors that can synchronize between each other. They usually share some part of the memory and share cache of global device memory.
+**Multiprocessor (Streaming Multiprocessor)**- a group of GPU processors that can synchronize between each other. They usually share some part of the memory and share cache of global device memory. Current GPUs have few SMs.
 
-**Thread**
+**Thread**- a single instance of executing kernel
 
 **Work-group (block)** - 
 
@@ -98,17 +98,17 @@ We use nvcc CUDA compiler, see Makefiles of examples for details.
 
 Copy CUDA programs’ samples to your local directory using `cuda-install-sample-7.0.sh` script, which can be found in the installation directory under bin subdirectory.
 
-Compile the code of `1_Utilities/deviceQuery` example using make. Run the program deviceQuery to verify that the CUDA toolkit and drivers work. You should be able to read specification of the GPU.
+Compile the code of `1_Utilities/deviceQuery` example using make. Run the program deviceQuery to verify that the CUDA toolkit and drivers work. You should be able to read specification of the GPU. Check how many SMs is in the card you use.
 
 ### 1d Stencil
 
 1d Stencil of radius `D > 1` is a function on vector `X` to obtain vector `Y` of the same size such that `Y[i] = X[i - D] + X[i - D + 1] + … + X[i + D]`, where index addition is modulo `X`’s length.
 
-1. Analyze code in `lab1/1dstencil1.cu`. Add code to measure execution time of kernels (you can use NVIDIA events for this (see [here](http://devblogs.nvidia.com/parallelforall/how-implement-performance-metrics-cuda-cc/)). Try experimenting with block number and threads per block to improve speed. Which configuration is best? Why? What if we increase the number of elements in the vector?
+1. Analyze code in `lab1/1dstencil1.cu`. Add code to measure execution time of kernels (you can use NVIDIA events for this (see [here](http://devblogs.nvidia.com/parallelforall/how-implement-performance-metrics-cuda-cc/))). Try experimenting with block number and threads per block to improve speed. Which configuration is best? Why? What if we increase the number of elements in the vector?
 
 2. Compare and run codes in `1dStencil1.cu` and `1dStencil2.cu` files. Can you explain why second version is faster?
 
-3. Delete the line `__syncthreads()` in `1dstencil2.cu`. What has changed in the result? Can you explain what `__syncthreads()` does?
+3. Delete the line `__syncthreads()` in `1dStencil2.cu`. What has changed in the result? Can you explain what `__syncthreads()` does?
 
 ### 2d Stencil (2 points)
 
@@ -118,4 +118,4 @@ Write your solution to 2d Stencil problem using CUDA platform. In 2d version inp
 
 1. Cuda documentation: [http://docs.nvidia.com/cuda/index.html#axzz3W3H2DE3N](http://docs.nvidia.com/cuda/index.html#axzz3W3H2DE3N)
 
-2. Into to CUDA programming: [http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#axzz3VcSdDZPm](http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#axzz3VcSdDZPm)
+2. Introduction to CUDA programming: [http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#axzz3VcSdDZPm](http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#axzz3VcSdDZPm)
