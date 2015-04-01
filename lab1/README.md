@@ -102,9 +102,9 @@ Compile the code of `1_Utilities/deviceQuery` example using make. Run the progra
 
 ### 1d Stencil
 
-1d Stencil of radius `D > 0` is a function on vector `X` to obtain vector `Y` of the same size such that `Y[i] = X[i - D] + X[i - D + 1] + … + X[i + D]`, where index addition is modulo `X`’s length.
+1d Stencil of radius `D > 1` is a function on vector `X` to obtain vector `Y` of the same size such that `Y[i] = X[i - D] + X[i - D + 1] + … + X[i + D]`, where index addition is modulo `X`’s length.
 
-1. Analyze code in `lab1/1dstencil1.cu`. Add code to measure execution time of kernels. Try experimenting with block number and threads per block to improve speed. Which configuration is best? Why? What if we increase the number of elements in the vector?
+1. Analyze code in `lab1/1dstencil1.cu`. Add code to measure execution time of kernels (you can use NVIDIA events for this (see [here](http://devblogs.nvidia.com/parallelforall/how-implement-performance-metrics-cuda-cc/)). Try experimenting with block number and threads per block to improve speed. Which configuration is best? Why? What if we increase the number of elements in the vector?
 
 2. Compare and run codes in `1dStencil1.cu` and `1dStencil2.cu` files. Can you explain why second version is faster?
 
@@ -112,7 +112,7 @@ Compile the code of `1_Utilities/deviceQuery` example using make. Run the progra
 
 ### 2d Stencil (2 points)
 
-Write your solution to 2d Stencil problem using CUDA platform. In 2d version input X and output Y are matrices. Output matrix Y is defined as Yij = sum of elements of X with index (k, l) s.t. i - D < k < i + D and j - D < l < j + D.
+Write your solution to 2d Stencil problem using CUDA platform. In 2d version input `X` and output `Y` are matrices. Output matrix `Y` is defined as `Y(i, j)` = sum of elements of `X` with index `(k, l)` s.t. `i - D < k < i + D` and `j - D < l < j + D`.
 
 ## Additional information
 
