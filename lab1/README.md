@@ -1,5 +1,3 @@
-# PWIR CUDA LABS
-
 # Lab 1
 
 ## Introduction
