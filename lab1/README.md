@@ -36,7 +36,7 @@ CUDA program consists of serial code performed on the host (CPU and computer mem
 
 **Thread**- a single instance of executing kernel
 
-**Work-group (block)** - 
+**Work-group (block)** - a logical group of threads working on a single multiprocessor in parallel.
 
 ## Programming using CUDA - the basics
 
