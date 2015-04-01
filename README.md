@@ -65,18 +65,17 @@ Figure below shows a rough comparison of CPU and GPU memory structures.
 Kernels are written in CUDA C a subset of C. When called, kernels are executed multiple times by many threads. Let’s analyze simple example below that demonstrates a kernel and calling it from the host code. The function computes sum of two vectors.
 
 ```cuda
-
-    // Kernel definition - we prepend it with keyword __global__
-    __global__ void VecAdd(float* A, float* B, float* C) { 
-      int i = threadIdx.x; // we can extract thread Id
-      C[i] = A[i] + B[i];  // single thread sums only position equal to its thread Id
-    } 
-    int main() { 
-      ...  
-      // Kernel invocation with N threads 
-      VecAdd<<<1, N>>>(A, B, C); // A, B, C are addresses of vectors in device memory
-  	  ... 
-    }
+// Kernel definition - we prepend it with keyword __global__
+__global__ void VecAdd(float* A, float* B, float* C) { 
+  int i = threadIdx.x; // we can extract thread Id
+  C[i] = A[i] + B[i];  // single thread sums only position equal to its thread Id
+} 
+int main() { 
+  ...  
+  // Kernel invocation with N threads 
+  VecAdd<<<1, N>>>(A, B, C); // A, B, C are addresses of vectors in device memory
+  ... 
+}
 ```
 
 ### Thread hierarchy
@@ -85,7 +84,7 @@ Inside a block threads are identified by a threadIdx - a 3 dimensional vector (a
 
 The number of threads per block is limited (since they must fit into single MP). On most current GPU the limit is 1024. However, the threads can be executed by multiple blocks, which number is practically unlimited. Like threads blocks are organized in one, two or tree-dimensional space. 
 
-The number of threads per block and blocks is specified between <<< … >>> operators used when calling kernel function. The arguments can be of type int (for one-dimensional grid) or dim3 (for two- or tree-dimensional).
+The number of threads per block and blocks is specified between `<<< … >>>` operators used when calling kernel function. The arguments can be of type int (for one-dimensional grid) or dim3 (for two- or tree-dimensional).
 
 ## Exercises
 
@@ -93,25 +92,25 @@ You can use any CUDA supported graphics card. Most of recent NVIDIA cards (even 
 
 For instructions on how to install CUDA toolkit visit: [http://docs.nvidia.com/cuda/index.html#getting-started-guides](http://docs.nvidia.com/cuda/index.html#getting-started-guides)
 
-CUDA toolkit should be already installed on lab computers and on nvidia1 and nvidia2 hosts. The installation directory on nvidia hosts is /usr/local/cuda-7.0/, in labs it is /opt/cuda-7.0/.
+CUDA toolkit should be already installed on lab computers and on nvidia1 and nvidia2 hosts. The installation directory on nvidia hosts is `/usr/local/cuda-7.0/`, in labs it is `/opt/cuda-7.0/`.
 
 We use nvcc CUDA compiler, see Makefiles of examples for details.
 
 ### DeviceQuery
 
-Copy CUDA programs’ samples to your local directory using cuda-install-sample-7.0.sh script, which can be found in the installation directory under bin subdirectory.
+Copy CUDA programs’ samples to your local directory using `cuda-install-sample-7.0.sh` script, which can be found in the installation directory under bin subdirectory.
 
-Compile the code of 1_Utilities/deviceQuery example using make. Run the program deviceQuery to verify that the CUDA toolkit and drivers work. You should be able to read specification of the GPU.
+Compile the code of `1_Utilities/deviceQuery` example using make. Run the program deviceQuery to verify that the CUDA toolkit and drivers work. You should be able to read specification of the GPU.
 
 ### 1d Stencil
 
-1d Stencil of radius D > 0 is a function on vector X to obtain vector Y of the same size such that Y[i] = X[i - D] + X[i - D + 1] + … + X[i + D], where index addition is modulo X’s length.
+1d Stencil of radius `D > 0` is a function on vector `X` to obtain vector `Y` of the same size such that `Y[i] = X[i - D] + X[i - D + 1] + … + X[i + D]`, where index addition is modulo `X`’s length.
 
-1. Analyze code in 1dstencil1.cu. Add code to measure execution time of kernels. Try experimenting with block number and threads per block to improve speed. Which configuration is best? Why? What if we increase the number of elements in the vector?
+1. Analyze code in `lab1/1dstencil1.cu`. Add code to measure execution time of kernels. Try experimenting with block number and threads per block to improve speed. Which configuration is best? Why? What if we increase the number of elements in the vector?
 
-2. Compare and run codes in 1dStencil1.cu and 1dStencil2.cu files. Can you explain why second version is faster?
+2. Compare and run codes in `1dStencil1.cu` and `1dStencil2.cu` files. Can you explain why second version is faster?
 
-3. Delete the line __syncthreads() in 1dstencil2.cu. What has changed in the result? Can you explain what __syncthreads() does?
+3. Delete the line `__syncthreads()` in `1dstencil2.cu`. What has changed in the result? Can you explain what `__syncthreads()` does?
 
 ### 2d Stencil (2 points)
 
