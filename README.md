@@ -4,7 +4,7 @@
 
 ## Introduction
 
-**Compute Unified Device Architecture (CUDA) **is a parallel computing plaform and programming model created by NVIDIA to allow use of GPUs for general purpose processing (not exclusively graphics).
+**Compute Unified Device Architecture (CUDA)**is a parallel computing plaform and programming model created by NVIDIA to allow use of GPUs for general purpose processing (not exclusively graphics).
 
 Unlike traditional CPUs, GPUs are processors specialized for compute-intense, high parallel computation. More specifically, GPU is particullary efective for problems that can be solved by data-parallel computations, i.e., programs that run the same code in parallel on different pieces of data. On the other hand, GPUs are not the best choice for realization of compuations that pose sophistacated flow control or operate on large amounts of data. To this end, CUDA platform may be viewed as a realization of PRAM model (but the differences we cover later).
 
@@ -28,13 +28,13 @@ CUDA program consists of serial code performed on the host (CPU and computer mem
 
 ### Terminology
 
-**Host **- the CPU and its memory
+**Host**- the CPU and its memory
 
-**Device **- the GPU and its memory
+**Device**- the GPU and its memory
 
 **Kernel** - code that is performed by a single GPU processor (thread)
 
-**Multiprocessor **- a group of GPU processors that can synchronize between each other. They usually share some part of the memory and share cache of global device memory.
+**Multiprocessor**- a group of GPU processors that can synchronize between each other. They usually share some part of the memory and share cache of global device memory.
 
 **Thread**
 
@@ -58,28 +58,26 @@ GPU has following memory types:
 
 Figure below shows a rough comparison of CPU and GPU memory structures.
 
-![image alt text](image_0.png)
+![image alt text](http://docs.nvidia.com/cuda/cuda-c-programming-guide/graphics/gpu-devotes-more-transistors-to-data-processing.png)
 
 ### Kernel
 
 Kernels are written in CUDA C a subset of C. When called, kernels are executed multiple times by many threads. Let’s analyze simple example below that demonstrates a kernel and calling it from the host code. The function computes sum of two vectors.
 
-<table>
-  <tr>
-    <td>// Kernel definition - we prepend it with keyword __global__
-__global__ void VecAdd(float* A, float* B, float* C) { 
-  int i = threadIdx.x; // we can extract thread Id
-  C[i] = A[i] + B[i];  // single thread sums only position equal to its thread Id
-} 
-int main() { 
-  ...  
-  // Kernel invocation with N threads 
-  VecAdd<<<1, N>>>(A, B, C); // A, B, C are addresses of vectors in device memory
-  ... 
-}</td>
-  </tr>
-</table>
+```cuda
 
+    // Kernel definition - we prepend it with keyword __global__
+    __global__ void VecAdd(float* A, float* B, float* C) { 
+      int i = threadIdx.x; // we can extract thread Id
+      C[i] = A[i] + B[i];  // single thread sums only position equal to its thread Id
+    } 
+    int main() { 
+      ...  
+      // Kernel invocation with N threads 
+      VecAdd<<<1, N>>>(A, B, C); // A, B, C are addresses of vectors in device memory
+  	  ... 
+    }
+```
 
 ### Thread hierarchy
 
