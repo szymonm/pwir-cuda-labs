@@ -4,25 +4,25 @@
 
 **Compute Unified Device Architecture (CUDA)** is a parallel computing plaform and programming model created by NVIDIA to allow use of GPUs for general purpose processing (not exclusively graphics).
 
-Unlike traditional CPUs, GPUs are processors specialized for compute-intense, high parallel computation. More specifically, GPU is particullary efective for problems that can be solved by data-parallel computations, i.e., programs that run the same code in parallel on different pieces of data. On the other hand, GPUs are not the best choice for realization of compuations that pose sophistacated flow control or operate on large amounts of data. To this end, CUDA platform may be viewed as a realization of PRAM model (but the differences we cover later).
+Unlike traditional CPUs, GPUs are processors specialized for computationally intensive, highly parallel computation. More specifically, GPUs are particullary efective for problems that can be solved by data-parallel computations, i.e., programs that run the same code in parallel on different pieces of data. On the other hand, GPUs are not the best choice for tasks requiring sophisticated flow control or irregular data trasfers. To this end, CUDA platform may be viewed as a realization of PRAM model (but with differences we cover later).
 
-An alternative to CUDA is OpenCL - a standard supported by many computer companies (Apple, Intel, AMD, Qualcomm). It was designed as a framework for writing code on various heterogenous platforms. Although it is far more general than CUDA (suited only for NVIDIA devices), it is also more 
+An alternative to CUDA is OpenCL - a standard supported by many vendors (Apple, Intel, AMD, Qualcomm). OpenCL is designed as a framework for writing code on various heterogenous platforms, with drivers for Intel CPUs and GPUs, and AMD and NVIDIA GPUs. Unfortunately, OpenCL is not well supported by NVIDIA hardware.
 
 ### Applications
 
-There are following ways of using CUDA supported GPU:
+CUDA GPUs can be used in the following ways:
 
 1. Middleware libraries for popular languages (examples include cuBLAS, cuFFT, Thrust, CULA) that hide details of using GPU behind normal function calls (C++, Java, Python).
 
-2. OpenACC compiler directives that are injected in normal code to indicate fragments of the program that should be parallelized and run on the GPU.
+2. OpenACC compiler directives that are added by the programmer to the code to indicate fragments  that should be parallelized and run on the GPU.
 
-3. Direct GPU programming using C/C++ based language that is executed on the GPU processors.
+3. Direct GPU programming using C/C++-based language that is executed on the GPU processors (CUDA, OpenCL).
 
 In the labs we cover only the last possibility.
 
 ### Programming model
 
-CUDA program consists of serial code performed on the host (CPU and computer memory) and parallel code performed by GPU’s processors called kernel. Communication between host and device (GPU) occurs via data transfer between computer memory and device main memory. In the simplest case program copies data from host memory to device’s, runs kernel code on the device and then copies results from device memory to main program memory.
+A CUDA program consists of a serial code performed on the host (CPU and computer memory, RAM) and a parallel code performed by GPU’s processors called kernel. Communication between the host and the device (GPU) occurs via explicit data transfers between the main system memory and the device main memory. In the simplest case program copies data from the host memory to the device memory, runs the kernel code on the device and then copies results from the device memory to the main host memory.
 
 ### Terminology
 
@@ -30,13 +30,13 @@ CUDA program consists of serial code performed on the host (CPU and computer mem
 
 **Device**- the GPU and its memory;
 
-**Kernel** - code that is performed by a single GPU processor;
+**Kernel** - code that is executed by GPU;
 
-**Multiprocessor (Streaming Multiprocessor)**- a group of GPU processors that can synchronize between each other. They usually share some part of the memory and share cache of global device memory. Current GPUs have few SMs;
+**Multiprocessor (Streaming Multiprocessor, SM)**- a group of GPU processors (cores) that can synchronize between each other. They usually share some part of the memory and share cache of global device memory. Current GPUs have a few SMs (2-16);
 
 **Thread**- a single instance of executing kernel;
 
-**Work-group (block)** - a logical group of threads working on a single multiprocessor in parallel.
+**Work-group (block)** - a logical group of threads executed on a single multiprocessor.
 
 ## Programming using CUDA - the basics
 
@@ -48,31 +48,31 @@ GPU has following memory types:
 
 * **shared block memory** (read/write for threads in the block, fast but small - GTX 470 - 48 KB);
 
-* **thread private memory** (read/write for the thread, very fast but small - like processor registers);
+* **thread private memory** (read/write for a single thread, very fast but small - like processor registers);
 
 * **constants memory** (read for all threads, optimized for cuncurrent read, size: 64 KB);
 
 * **textures memory** (read only, offers different addressing, filtering for specific data).
 
-Figure below shows a rough comparison of CPU and GPU memory structures.
+The figure below shows a rough comparison of CPU and GPU transistor allocation.
 
-![image alt text](http://docs.nvidia.com/cuda/cuda-c-programming-guide/graphics/gpu-devotes-more-transistors-to-data-processing.png)
+![CPU and GPU transistor allocation](http://docs.nvidia.com/cuda/cuda-c-programming-guide/graphics/gpu-devotes-more-transistors-to-data-processing.png)
 
 ### Kernel
 
-Kernels are written in CUDA C a subset of C. When called, kernels are executed multiple times by many threads. Let’s analyze simple example below that demonstrates a kernel and calling it from the host code. The function computes sum of two vectors.
+Kernels are written in CUDA C, a subset of C. When called, a single kernel code is executed multiple times (by many threads). Let’s analyze a simple example below that demonstrates a kernel and calling it from the host code. The function computes sum of two vectors.
 
 ```cuda
 // Kernel definition - we prepend it with keyword __global__
-__global__ void VecAdd(float* A, float* B, float* C) { 
+__global__ void VecAdd(float* A, float* B, float* C) {
   int i = threadIdx.x; // we can extract thread Id
   C[i] = A[i] + B[i];  // single thread sums only position equal to its thread Id
-} 
-int main() { 
-  ...  
-  // Kernel invocation with N threads 
+}
+int main() {
+  ...
+  // Kernel invocation with N threads and a single block
   VecAdd<<<1, N>>>(A, B, C); // A, B, C are addresses of vectors in device memory
-  ... 
+  ...
 }
 ```
 
@@ -80,13 +80,13 @@ int main() {
 
 Inside a block threads are identified by a `threadIdx` - a 3 dimensional vector (accessing dimensions by `x`, `y` and `z`). However, programmer may use only one or two dimensions (like in the example above).
 
-The number of threads per block is limited (since they must fit into single MP). On most current GPU the limit is 1024. However, the threads can be executed by multiple blocks, which number is practically unlimited. Like threads blocks are organized in one, two or tree-dimensional space. 
+The number of threads per block is limited (since they must fit into single streaming multiprocessor). On the majority of the current GPUs the limit is 1024. However, the threads can be executed by multiple blocks, which number is practically unlimited. Like threads blocks are organized in one, two or tree-dimensional space.
 
-The number of threads per block and blocks is specified between `<<< … >>>` operators used when calling kernel function. The arguments can be of type `int` (for one-dimensional grid) or `dim3` (for two- or tree-dimensional).
+The number of threads per block and blocks is specified between `<<< … >>>` operators used when calling kernel function. The arguments can be of type int (for one-dimensional grid) or dim3 (for two- or tree-dimensional grid).
 
 ## Exercises
 
-You can use any CUDA supported graphics card. Most of recent NVIDIA cards (even on notebooks) support it. 
+You can use any CUDA supported graphics card. Most of the recent NVIDIA cards (even notebook ones) support CUDA.
 
 For instructions on how to install CUDA toolkit visit: [http://docs.nvidia.com/cuda/index.html#getting-started-guides](http://docs.nvidia.com/cuda/index.html#getting-started-guides)
 
@@ -104,11 +104,15 @@ Compile the code of `1_Utilities/deviceQuery` example using make. Run the progra
 
 1d Stencil of radius `D > 1` is a function on vector `X` to obtain vector `Y` of the same size such that `Y[i] = X[i - D] + X[i - D + 1] + … + X[i + D]`, where index addition is modulo `X`’s length.
 
-1. Analyze code in `1dStencil1.cu`. Add code to measure execution time of kernels (you can use NVIDIA events for this (see [here](http://devblogs.nvidia.com/parallelforall/how-implement-performance-metrics-cuda-cc/))). Try experimenting with block number and threads per block to improve speed. Which configuration is best? Why? What if we increase the number of elements in the vector?
+1. Analyze code in `1dStencil1.cu`.
 
-2. Compare and run codes in `1dStencil1.cu` and `1dStencil2.cu` files. Can you explain why second version is faster?
+2. Add code measuring the execution time of kernels (you can use NVIDIA events for this, see [here](http://devblogs.nvidia.com/parallelforall/how-implement-performance-metrics-cuda-cc/)). Try experimenting with the number of blocks and threads per block to improve speed. Which configuration is the best? Why? What if we increase the number of elements in the vector?
 
-3. Delete the line `__syncthreads()` in `1dStencil2.cu`. What has changed in the result? Can you explain what `__syncthreads()` does?
+3. Add code measuring memory bandwith utilization of kernels; the bandwidth utilization is a good estimate of the efficiency of your code.
+
+4. Compare and run codes in `1dStencil1.cu` and `1dStencil2.cu` files. Can you explain why the second version is faster?
+
+5. Delete the line `__syncthreads()` in `1dStencil2.cu`. What has changed in the result? Can you explain what `__syncthreads()` does?
 
 ### 2d Stencil (1 point)
 
@@ -116,6 +120,7 @@ Write your solution to 2d Stencil problem using CUDA platform. In 2d version inp
 
 **Hints**
 1. CUDA example of matrix multiplication may be usefull as it uses 2d arrays. Alternatively, you can google for `cudaMallocPitch`.
+
 2. (*) Try to profile your solution with `nvprof` tool. You can read the [article](http://devblogs.nvidia.com/parallelforall/cuda-pro-tip-nvprof-your-handy-universal-gpu-profiler/) for a quick introduction.
 
 ## Additional information
