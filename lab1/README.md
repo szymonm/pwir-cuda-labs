@@ -116,7 +116,7 @@ Write your solution to 2d Stencil problem using CUDA platform. In 2d version inp
 
 **Hints**
 1. CUDA example of matrix multiplication may be usefull as it uses 2d arrays. Alternatively, you can google for `cudaMallocPitch`.
-2. (*) Try to profile your solution with `nvprof` tool. You can read the [http://devblogs.nvidia.com/parallelforall/cuda-pro-tip-nvprof-your-handy-universal-gpu-profiler/](article) for a quick introduction.
+2. (*) Try to profile your solution with `nvprof` tool. You can read the [article](http://devblogs.nvidia.com/parallelforall/cuda-pro-tip-nvprof-you-handy-universal-gpu-profiler/) for a quick introduction.
 
 ## Additional information
 
