@@ -119,6 +119,7 @@ Compile the code of `1_Utilities/deviceQuery` example using make. Run the progra
 Write your solution to 2d Stencil problem using CUDA platform. In 2d version input `X` and output `Y` are matrices. Output matrix `Y` is defined as `Y(i, j)` = sum of elements of `X` with index `(k, l)` s.t. `i - D < k < i + D` and `j - D < l < j + D`.
 
 **Hints**
+
 1. CUDA example of matrix multiplication may be usefull as it uses 2d arrays. Alternatively, you can google for `cudaMallocPitch`.
 
 2. (*) Try to profile your solution with `nvprof` tool. You can read the [article](http://devblogs.nvidia.com/parallelforall/cuda-pro-tip-nvprof-your-handy-universal-gpu-profiler/) for a quick introduction.
