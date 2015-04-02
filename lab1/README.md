@@ -78,11 +78,11 @@ int main() {
 
 ### Thread hierarchy
 
-Inside a block threads are identified by a threadIdx - a 3 dimensional vector (accessing dimensions by x, y and z). However, programmer may use only one or two dimensions (like in the example above).
+Inside a block threads are identified by a `threadIdx` - a 3 dimensional vector (accessing dimensions by `x`, `y` and `z`). However, programmer may use only one or two dimensions (like in the example above).
 
 The number of threads per block is limited (since they must fit into single MP). On most current GPU the limit is 1024. However, the threads can be executed by multiple blocks, which number is practically unlimited. Like threads blocks are organized in one, two or tree-dimensional space. 
 
-The number of threads per block and blocks is specified between `<<< … >>>` operators used when calling kernel function. The arguments can be of type int (for one-dimensional grid) or dim3 (for two- or tree-dimensional).
+The number of threads per block and blocks is specified between `<<< … >>>` operators used when calling kernel function. The arguments can be of type `int` (for one-dimensional grid) or `dim3` (for two- or tree-dimensional).
 
 ## Exercises
 
@@ -113,6 +113,10 @@ Compile the code of `1_Utilities/deviceQuery` example using make. Run the progra
 ### 2d Stencil (1 point)
 
 Write your solution to 2d Stencil problem using CUDA platform. In 2d version input `X` and output `Y` are matrices. Output matrix `Y` is defined as `Y(i, j)` = sum of elements of `X` with index `(k, l)` s.t. `i - D < k < i + D` and `j - D < l < j + D`.
+
+**Hints**
+1. CUDA example of matrix multiplication may be usefull as it uses 2d arrays. Alternatively, you can google for `cudaMallocPitch`.
+2. (*) Try to profile your solution with `nvprof` tool. You can read the [http://devblogs.nvidia.com/parallelforall/cuda-pro-tip-nvprof-your-handy-universal-gpu-profiler/](article) for a quick introduction.
 
 ## Additional information
 
