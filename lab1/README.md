@@ -116,7 +116,7 @@ Compile the code of `1_Utilities/deviceQuery` example using make. Run the progra
 
 ### 2d Stencil (1 point)
 
-Write your solution to 2d Stencil problem using CUDA platform. In 2d version input `X` and output `Y` are matrices. Output matrix `Y` is defined as `Y(i, j)` = sum of elements of `X` with index `(k, l)` s.t. `i - D < k < i + D` and `j - D < l < j + D`.
+Write your solution to 2d Stencil problem using CUDA platform. In 2d version input `X` and output `Y` are matrices. Output matrix `Y` is defined as `Y(i, j)` = sum of elements of `X` with index `(k, l)` s.t. `i - D < k < i + D` and `j - D < l < j + D`. You can fill only the kernel code in file `ex/2dStencil.cu`.
 
 **Hints**
 
