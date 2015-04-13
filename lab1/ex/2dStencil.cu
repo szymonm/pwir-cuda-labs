@@ -5,8 +5,8 @@
 #define BLOCK_SIZE_X    16 
 #define BLOCK_SIZE_Y    16 
 #define MATRIX_WIDTH (128)
-#define MATRIX_HEIGTH (128)
-#define NUM_ELEMENTS (MATRIX_HEIGTH * MATRIX_WIDTH)
+#define MATRIX_HEIGHT (128)
+#define NUM_ELEMENTS (MATRIX_HEIGHT * MATRIX_WIDTH)
 
 // CUDA API error checking macro
 #define cudaCheck(error) \
@@ -44,7 +44,7 @@ int main()
   // Copy input data to device
   cudaCheck( cudaMemcpy( d_in, h_in, NUM_ELEMENTS * sizeof(int), cudaMemcpyHostToDevice) );
 
-  dim3 blocks = dim3(MATRIX_WIDTH / BLOCK_SIZE_X, MATRIX_WIDTH / BLOCK_SIZE_Y, 1);
+  dim3 blocks = dim3(MATRIX_WIDTH / BLOCK_SIZE_X, MATRIX_HEIGHT / BLOCK_SIZE_Y, 1);
   dim3 threads = dim3(BLOCK_SIZE_X, BLOCK_SIZE_Y, 1);
 
   stencil_2d<<< blocks, threads >>> (d_in, d_out);
@@ -55,17 +55,17 @@ int main()
 
   // Verify results (inclusion-exclusion principle)
   for (j = 0; j < MATRIX_WIDTH; ++j) {
-    for (i = 0; i < MATRIX_HEIGTH; ++i) {
+    for (i = 0; i < MATRIX_HEIGHT; ++i) {
       int expected = (2 * RADIUS + 1) * (2 * RADIUS + 1) - 
         (j < RADIUS ? (RADIUS - j) * (2 * RADIUS + 1) : 0) -
         (i < RADIUS ? (RADIUS - i) * (2 * RADIUS + 1) : 0) +
         ((j < RADIUS && i < RADIUS) ? (RADIUS - j) * (RADIUS - i) : 0) -
         (j > MATRIX_WIDTH - RADIUS - 1 ? (j + RADIUS + 1 - MATRIX_WIDTH) * (2 * RADIUS + 1) : 0) -
-        (i > MATRIX_HEIGTH - RADIUS - 1 ? (i + RADIUS + 1 - MATRIX_HEIGTH) * (2 * RADIUS + 1) : 0) +
-        (j > MATRIX_WIDTH - RADIUS - 1 && i > MATRIX_HEIGTH - RADIUS - 1 ?
-         (j + RADIUS + 1 - MATRIX_WIDTH) * (i + RADIUS + 1 - MATRIX_HEIGTH) : 0) + 
-        (j < RADIUS && i > MATRIX_HEIGTH - RADIUS - 1 ? 
-         (RADIUS - j) * (i + RADIUS + 1 - MATRIX_HEIGTH) : 0) + 
+        (i > MATRIX_HEIGHT - RADIUS - 1 ? (i + RADIUS + 1 - MATRIX_HEIGHT) * (2 * RADIUS + 1) : 0) +
+        (j > MATRIX_WIDTH - RADIUS - 1 && i > MATRIX_HEIGHT - RADIUS - 1 ?
+         (j + RADIUS + 1 - MATRIX_WIDTH) * (i + RADIUS + 1 - MATRIX_HEIGHT) : 0) + 
+        (j < RADIUS && i > MATRIX_HEIGHT - RADIUS - 1 ? 
+         (RADIUS - j) * (i + RADIUS + 1 - MATRIX_HEIGHT) : 0) + 
         (i < RADIUS && j > MATRIX_WIDTH - RADIUS - 1 ?
          (RADIUS - i) *  (j + RADIUS + 1 - MATRIX_WIDTH) : 0);
       if (h_out[j + i * MATRIX_WIDTH] != expected) {
