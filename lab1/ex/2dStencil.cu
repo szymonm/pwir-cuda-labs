@@ -53,6 +53,7 @@ int main()
 
   cudaCheck( cudaMemcpy( h_out, d_out, NUM_ELEMENTS * sizeof(int), cudaMemcpyDeviceToHost) );
 
+  bool correct = true;
   // Verify results (inclusion-exclusion principle)
   for (j = 0; j < MATRIX_WIDTH; ++j) {
     for (i = 0; i < MATRIX_HEIGHT; ++i) {
@@ -70,12 +71,12 @@ int main()
          (RADIUS - i) *  (j + RADIUS + 1 - MATRIX_WIDTH) : 0);
       if (h_out[j + i * MATRIX_WIDTH] != expected) {
         printf("Element h_out[%d + %d * MATRIX_WIDTH] == %d != %d\n", j, i, h_out[j + i * MATRIX_WIDTH], expected);
-        break;
+        correct = false;
       }
     }
   }
 
-  if (i * j == NUM_ELEMENTS)
+  if (correct)
     printf("SUCCESS!\n");
   else
     printf("FAILURE!\n");
