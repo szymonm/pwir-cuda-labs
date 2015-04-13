@@ -55,6 +55,9 @@ int main()
   // Call kernels
   stencil_1d<<< (NUM_ELEMENTS + BLOCK_SIZE - 1)/BLOCK_SIZE, BLOCK_SIZE >>> (d_in, d_out);
 
+  // Check errors from launching the kernel
+  cudaCheck(cudaPeekAtLastError());
+
   // Copy results from device memory to host
   cudaCheck( cudaMemcpy( h_out, d_out, NUM_ELEMENTS * sizeof(int), 
   	cudaMemcpyDeviceToHost) );

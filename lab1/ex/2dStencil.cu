@@ -48,6 +48,8 @@ int main()
 
   stencil_2d<<< blocks, threads >>> (d_in, d_out);
 
+  cudaCheck(cudaPeekAtLastError());
+
   cudaCheck( cudaMemcpy( h_out, d_out, NUM_ELEMENTS * sizeof(int), cudaMemcpyDeviceToHost) );
 
   // Verify results (inclusion-exclusion principle)
@@ -67,12 +69,15 @@ int main()
          (RADIUS - i) *  (j + RADIUS + 1 - MATRIX_WIDTH) : 0);
       if (h_out[j + i * MATRIX_WIDTH] != expected) {
         printf("Element h_out[%d + %d * MATRIX_WIDTH] == %d != %d\n", j, i, h_out[i], expected);
+        break;
       }
     }
   }
 
   if (i * j == NUM_ELEMENTS)
     printf("SUCCESS!\n");
+  else
+    print("FAILURE!\n");
 
   // Free out memory
   cudaFree(d_in);
