@@ -69,7 +69,7 @@ int main()
         (i < RADIUS && j > MATRIX_WIDTH - RADIUS - 1 ?
          (RADIUS - i) *  (j + RADIUS + 1 - MATRIX_WIDTH) : 0);
       if (h_out[j + i * MATRIX_WIDTH] != expected) {
-        printf("Element h_out[%d + %d * MATRIX_WIDTH] == %d != %d\n", j, i, h_out[i], expected);
+        printf("Element h_out[%d + %d * MATRIX_WIDTH] == %d != %d\n", j, i, h_out[j + i * MATRIX_WIDTH], expected);
         break;
       }
     }
