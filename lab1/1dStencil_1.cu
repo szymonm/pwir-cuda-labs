@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// We assume that NUM_ELEMENTS is divisible by BLOCK_SIZE
 #define RADIUS        3
 #define BLOCK_SIZE    256
 #define NUM_ELEMENTS  (4096*2)

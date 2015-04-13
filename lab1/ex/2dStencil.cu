@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// We assume that size are divisible
 #define RADIUS        2
 #define BLOCK_SIZE_X    16 
 #define BLOCK_SIZE_Y    16 
@@ -77,7 +78,7 @@ int main()
   if (i * j == NUM_ELEMENTS)
     printf("SUCCESS!\n");
   else
-    print("FAILURE!\n");
+    printf("FAILURE!\n");
 
   // Free out memory
   cudaFree(d_in);
