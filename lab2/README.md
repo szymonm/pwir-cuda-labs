@@ -1,5 +1,7 @@
 # Lab 2 - matrix multiplication case study
 
+Matrix multiplication is one of the fundamental computational problems arising in many applications. During this lab we focus on implementing matrix multiplication on CUDA device.
+
 ## Naive version
 
 In naive implementation every thread computes one element of resulting matrix (see `matrixMulNaive.cu`).
@@ -40,7 +42,7 @@ We can also use it to generate a trace for detailed analysis:
 ```
 nvprof --analysis-metrics -o  mm-analysis.nvprof ./matrixMulNaive
 ```
-Now, download `mm-analysis.nvprof` file and analyse it using visual profiler (`nvvp`).
+Now, download `mm-analysis.nvprof` file to your local host and analyse it using visual profiler (`nvvp`).
 
 Can you tell what is the problem with the naive version of matrix multiplication?
 
@@ -85,3 +87,4 @@ When `A = B`, values of `C` in red tile `(2, 2)` depend only on tiles in grey (d
 
 ## Extensions
 
+### Pragma unroll
