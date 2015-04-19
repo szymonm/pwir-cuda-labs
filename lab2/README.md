@@ -1,6 +1,6 @@
 # Lab 2 - matrix multiplication case study
 
-Matrix multiplication is one of the fundamental computational problems arising in many applications. During this lab we focus on implementing matrix multiplication on CUDA device.
+Matrix multiplication is one of the fundamental computational problems arising in many applications. During this lab we focus on implementing matrix multiplication on a CUDA device.
 
 ## Naive version
 
@@ -85,6 +85,26 @@ When `A = B`, values of `C` in red tile `(2, 2)` depend only on tiles in grey (d
 ![Step 3](https://raw.githubusercontent.com/szymonm/pwir-cuda-labs/master/lab2/graphics/tiledMM3.png)
 ![Step 4](https://raw.githubusercontent.com/szymonm/pwir-cuda-labs/master/lab2/graphics/tiledMM4.png)
 
-## Extensions
+## Further imporovements
 
 ### Pragma unroll
+
+GPUs processors are specialized for floating point operations that are performed much faster than integer operations. Thus, a simple loop:
+```cuda
+// float[] b; float a;
+for ( int i = 0; i < 5; i++ )
+    b[i] = a * i;
+```
+wastes a lot a GPU resources on: 1) `i` allocation; 2) `i` incrementation; 3) loop condition checking and can be firmly optimized by:
+```
+b[0] = a * 0;
+b[1] = a * 1;
+...
+b[4] = a * 4;
+```
+To automate this you can use CUDA's pragma called unroll (as long as `SIZE` in known at the compile time):
+```
+#pragma unroll
+for(int i=0;i<SIZE;i++)  //or simply for(int i=0;i<100;i++)
+    b[i]=i;
+```
