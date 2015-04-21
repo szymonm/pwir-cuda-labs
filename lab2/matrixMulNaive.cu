@@ -20,14 +20,17 @@
 
 #define POS(i, j) (((i) * MATRIX_DIM) + j)
 
-#define cudaCheck(error) \
-  if (error != cudaSuccess) { \
-    printf("Fatal error: %s at %s:%d\n", \
-      cudaGetErrorString(error), \
-      __FILE__, __LINE__); \
-    exit(1); \
-  }
-
+// CUDA API error checking macro
+static void handleError(cudaError_t err,
+                        const char *file,
+                        int line ) {
+    if (err != cudaSuccess) {
+        printf("%s in %s at line %d\n", cudaGetErrorString(err),
+               file, line );
+        exit(EXIT_FAILURE);
+    }
+}
+#define cudaCheck( err ) (handleError(err, __FILE__, __LINE__ ))
 /**
  * Matrix multiplication (CUDA Kernel) on the device: C = A * B
  * wA is A's width and wB is B's width

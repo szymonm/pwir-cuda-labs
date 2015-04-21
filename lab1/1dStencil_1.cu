@@ -6,14 +6,16 @@
 #define NUM_ELEMENTS  (4096*2)
 
 // CUDA API error checking macro
-#define cudaCheck(error) \
-  if (error != cudaSuccess) { \
-    printf("Fatal error: %s at %s:%d\n", \
-      cudaGetErrorString(error), \
-      __FILE__, __LINE__); \
-    exit(1); \
-  }
-
+static void handleError(cudaError_t err,
+                        const char *file,
+                        int line ) {
+    if (err != cudaSuccess) {
+        printf("%s in %s at line %d\n", cudaGetErrorString(err),
+               file, line );
+        exit(EXIT_FAILURE);
+    }
+}
+#define cudaCheck( err ) (handleError(err, __FILE__, __LINE__ ))
 __global__ void stencil_1d(int *in, int *out) 
 {
 	// blockDim is 3-dimensional vector storing block grid dimensions
