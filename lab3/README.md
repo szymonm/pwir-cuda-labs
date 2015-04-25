@@ -76,3 +76,9 @@ while True:
 ```
 
 ### Exercises
+
+1. Implement the parallel algorithm for finding *MIS* on CUDA platform. Measure the speed-up over the sequential version (greedy algorithm).
+
+2. Plot a diagram showing running time of your implementation versus graph size. What is the observed complexity of the implementation?
+
+3. Can you verify graph size limit that your CUDA implementation is possible to handle efficiently?
