@@ -49,22 +49,22 @@ CUDA supports supports most of the C/C++ standard library mathematical functions
 Given undirected graph `G = (V, E)` **Independent Set** of `G` is a set `I` of vertices `V` such that no adjacent vertices are in `I`. **Maximal Independent Set (MIS)** is a maximal *Independent Set* under superset relation. *Independent Set* of the largest cardinality is called *Maximum Independent Set*.
 
 There exists a simple algorithm to find a *MIS* in the graph:
-```
+```python
 I ← ∅
 for v = 1 to n do
-  if (v has no neighbors in I) add v to I
+  if (v has no neighbors in I) then add v to I
 return I
 ```
 
 The *MIS* returned by the trivial algorithm is called *lexicographically first* MIS. As mentioned before, it appears that solving LFMIS is impossible to do effectively in parallel. However, there exists a simple randomized algorithm for finding any *MIS*.
 
-```
+```python
 I ← ∅
-repeat
+while True:
   S ← ∅
   for all v in V do in parallel
-    if d(v) = 0 then ad v to I and delete v from V
-    else mark v with probability 1/2d(v)
+    if (d(v) = 0) then add v to I and delete v from V
+    else mark v with probability 1/2 * d(v)
   for all (u, v) in E do in parallel
     if both u and v are marked
       then unmark the lower degree vertex
@@ -72,8 +72,7 @@ repeat
     if v is marked then add v to S
   I ← I ∪ S
   delete S and their neighbors from V, and all incident edges from E
-until V = ∅ 
-return I
+  if (V = ∅) return I
 ```
 
 ### Exercises
