@@ -115,7 +115,6 @@ void lfIndependentSet(int *adjacencyMatrix, int* independentSet) {
             }
         }
         if (!hasNeighborsInV) {
-            printf("Adding %d", i);
             independentSet[i] = 1;
         }
     }
