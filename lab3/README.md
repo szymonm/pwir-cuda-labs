@@ -71,7 +71,7 @@ while True:
   for all v in V do in parallel
     if v is marked then add v to S
   I ← I ∪ S
-  delete S\'=S ∪ neigh(S) from V, and all edges incident to S\' from E
+  delete S* = S ∪ neigh(S) from V, and all edges incident to S* from E
   if (V = ∅) return I
 ```
 
