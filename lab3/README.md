@@ -64,7 +64,7 @@ while True:
   S ← ∅
   for all v in V do in parallel
     if (d(v) = 0) then add v to I and delete v from V
-    else mark v with probability 1/2 * d(v)
+    else mark v with probability 1/ (2 * d(v))
   for all (u, v) in E do in parallel
     if both u and v are marked
       then unmark the lower degree vertex
