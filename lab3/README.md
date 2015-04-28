@@ -42,6 +42,38 @@ double norm = sqrt ((point.x * point.x) + (point.y * point.y))
 
 CUDA supports supports most of the C/C++ standard library mathematical functions (like `sin`, `cons`, `sqrt` ...). Some of them have less precise but faster varsions that can be used in the device code, i.e.: `__fdividef` (division), `__sinf`, `__logf`, `__powf`. See [here](http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#intrinsic-functions) for a complete list.
 
+### Random numbers
+
+Using CUDA random number generator is a bit complicated, because you should avaiod initializing generator in every thread from seed and you don't want to use the same generator across threads (because you would obtain the same *random* numbers). Hence, you usually initialize multiple random number generator states (in a kernel called in a setup phase) and pass it to your kernel, so that every thread can use different state. See the code below.
+```cuda
+__global__ void setup_kernel (curandState * state, unsigned long seed)
+{
+    int id = threadIdx.x;
+    curand_init(seed, id, 0, &state[id]);
+} 
+
+__global__ void generate( curandState* globalState ) 
+{
+    curandState localState = globalState[threadIdx.x];
+    float random = curand_uniform( &localState );
+    printf("random: %f\n", random);
+    globalState[threadIdx.x] = localState; 
+}
+
+int main( int argc, char** argv) 
+{
+    curandState* devStates;
+    cudaMalloc(&devStates, N*sizeof(curandState));
+    
+    // setup seeds
+    setup_kernel <<< 1, N >>> (devStates, time(NULL));
+
+    // generate random numbers
+    generate <<< 1, N >>> (devStates);
+
+    return 0;
+}
+```
 ### Debugging
 
 In new CUDA versions `printf` function works as expected. Try in kernel code:
