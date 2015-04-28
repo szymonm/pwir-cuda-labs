@@ -15,13 +15,19 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#define NUM_VERTICES 256
+#define NUM_VERTICES 1024
 
-#define SEQUENTIAL 1
+#define SEQUENTIAL 0
 
 #define POS(i, j) (((j) * NUM_VERTICES) + i)
 
-#define PRINT_EDGES 1
+#define PRINT_EDGES 0
+
+#define PSEUDO_RANDOM_SIZE 1024
+
+#define BLOCK_SIZE 32
+
+#define DEBUG 1
 
 // CUDA API error checking macro
 static void handleError(cudaError_t err,
@@ -35,24 +41,15 @@ static void handleError(cudaError_t err,
 }
 #define cudaCheck( err ) (handleError(err, __FILE__, __LINE__ ))
 
-/**
- * Independent Set algorithm
- */
-__global__ void independentSetCUDA(int *d_adjacencyMatrix, int *d_independentSet, int* d_degrees,
-    int* d_marked)
-{
-    // Fill kernel code
-}
-
 int sampleBinomialDistribution(double succesProbability) {
     return (int)((double)rand() / (double)RAND_MAX < succesProbability);
 }
 
-void printIndependentSet(int *independentSet) {
-    printf("IndependentSet(");
+void printArray(int arr[]) {
+    printf("Array(");
     for (int i = 0; i < NUM_VERTICES; i++) {
-        if (independentSet[i] == 1) {
-            printf("%d, ", i);
+        if (arr[i] > 0) {
+            printf("%d:%d, ", i, arr[i]);
         }
     }
     printf(")\n");
@@ -69,6 +66,22 @@ void printEdges(int *adjacencyMatrix) {
     }
 }
 
+void star(int *adjacencyMatrix) {
+    memset(adjacencyMatrix, 0, NUM_VERTICES * NUM_VERTICES);
+    for (int j = 1; j < NUM_VERTICES; j++) {
+        adjacencyMatrix[POS(0, j)] = 1;
+        adjacencyMatrix[POS(j, 0)] = 1;
+    }
+}
+
+void cycle(int *adjacencyMatrix) {
+    memset(adjacencyMatrix, 0, NUM_VERTICES * NUM_VERTICES);
+    for (int i = 0; i < NUM_VERTICES; i++) {
+        adjacencyMatrix[POS(i, (i + 1) % NUM_VERTICES)] = 1;
+        adjacencyMatrix[POS(i, (i + NUM_VERTICES - 1) % NUM_VERTICES)] = 1;
+    }
+}
+
 // Skewed random graph
 void randomGraph(int *adjacencyMatrix)
 {
@@ -81,6 +94,12 @@ void randomGraph(int *adjacencyMatrix)
             adjacencyMatrix[POS(i, j)] = edge;
             adjacencyMatrix[POS(j, i)] = edge;
         }
+    }
+}
+
+void fillPseudoRandoms(float pseudoRandoms[]) {
+    for (int i = 0; i < PSEUDO_RANDOM_SIZE; i++) {
+        pseudoRandoms[i] = 1. * (i % 3) / 3.;
     }
 }
 
@@ -120,9 +139,6 @@ void lfIndependentSet(int *adjacencyMatrix, int* independentSet) {
     }
 }
 
-/**
- * Run a simple test of matrix multiplication using CUDA
- */
 int main()
 {
     srand(1);
@@ -138,42 +154,60 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    //randomGraph(adjacencyMatrix);
     randomGraph(adjacencyMatrix);
-
-    // Allocate device memory
-    int *d_adjacencyMatrix, *d_degrees, *d_independentSet, *d_marked;
-
-    cudaCheck(cudaMalloc((void **) &d_adjacencyMatrix, adjacencyMatrix_mem_size));
-    cudaCheck(cudaMalloc((void **) &d_degrees, sizeof(int) * NUM_VERTICES));
-    cudaCheck(cudaMalloc((void **) &d_independentSet, sizeof(int) * NUM_VERTICES));
-    cudaCheck(cudaMalloc((void **) &d_marked, sizeof(int) * NUM_VERTICES));
-
-    // copy host memory to device
-    cudaCheck(cudaMemcpy(d_adjacencyMatrix, adjacencyMatrix, 
-        adjacencyMatrix_mem_size, cudaMemcpyHostToDevice));
-
-    dim3 threads = 1; // fill settings
-    dim3 grid = 1; //fill settings
 
     if (SEQUENTIAL) {
         lfIndependentSet(adjacencyMatrix, independentSet);
     } else {
         printf("Computing result using CUDA Kernel...\n");
+        
+        float randoms[PSEUDO_RANDOM_SIZE];
+        fillPseudoRandoms(randoms);
 
-        independentSetCUDA<<< grid, threads >>>(d_adjacencyMatrix, d_independentSet, d_degrees, d_marked);
+        // Allocate device memory
+        int *d_adjacencyMatrix, *d_degrees, *d_independentSet, *d_marked, *d_removedNodes,
+            *d_existsNonRemoved;
 
-        cudaCheck(cudaPeekAtLastError());
+        float *d_randoms;
+
+        /** Feel free to use other structures! **/
+        cudaCheck(cudaMalloc((void **) &d_adjacencyMatrix, adjacencyMatrix_mem_size));
+        cudaCheck(cudaMalloc((void **) &d_degrees, sizeof(int) * NUM_VERTICES));
+        cudaCheck(cudaMalloc((void **) &d_independentSet, sizeof(int) * NUM_VERTICES));
+        cudaCheck(cudaMalloc((void **) &d_marked, sizeof(int) * NUM_VERTICES));
+        cudaCheck(cudaMalloc((void **) &d_removedNodes, sizeof(int) * NUM_VERTICES));
+        cudaCheck(cudaMalloc((void **) &d_existsNonRemoved, sizeof(int)));
+
+        cudaCheck(cudaMalloc((void **) &d_randoms, sizeof(float) * PSEUDO_RANDOM_SIZE));
+
+        // copy host memory to device
+        cudaCheck(cudaMemcpy(d_adjacencyMatrix, adjacencyMatrix, 
+            adjacencyMatrix_mem_size, cudaMemcpyHostToDevice));
+
+        cudaCheck(cudaMemcpy(d_randoms, &randoms, 
+            sizeof(float) * PSEUDO_RANDOM_SIZE, cudaMemcpyHostToDevice));
+
+        /*
+           Run your kernel(s) here
+        */
         
         // Copy result from device to host
         cudaCheck(cudaMemcpy(independentSet, d_independentSet, NUM_VERTICES * sizeof(int), 
             cudaMemcpyDeviceToHost));
+
+        cudaFree(d_adjacencyMatrix);
+        cudaFree(d_degrees);
+        cudaFree(d_marked);
+        cudaFree(d_independentSet);
+        cudaFree(d_removedNodes);
     }
 
 
     printf("Checking computed result for correctness: ");
     
     if (PRINT_EDGES) printEdges(adjacencyMatrix);
-    printIndependentSet(independentSet);
+    printArray(independentSet);
 
     bool correct = verifyMaximalIndependentSet(adjacencyMatrix, independentSet);
 
@@ -182,10 +216,6 @@ int main()
     // Clean up memory
     free(adjacencyMatrix);
     free(independentSet);
-    cudaFree(d_adjacencyMatrix);
-    cudaFree(d_degrees);
-    cudaFree(d_marked);
-    cudaFree(d_independentSet);
 
     if (correct) {
         return EXIT_SUCCESS;

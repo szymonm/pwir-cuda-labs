@@ -42,6 +42,13 @@ double norm = sqrt ((point.x * point.x) + (point.y * point.y))
 
 CUDA supports supports most of the C/C++ standard library mathematical functions (like `sin`, `cons`, `sqrt` ...). Some of them have less precise but faster varsions that can be used in the device code, i.e.: `__fdividef` (division), `__sinf`, `__logf`, `__powf`. See [here](http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#intrinsic-functions) for a complete list.
 
+### Debugging
+
+In new CUDA versions `printf` function works as expected. Try in kernel code:
+``` cuda
+ printf("Block(%d, %d, %d), Thread(%d, %d, %d) Hello!", blockIdx.x, 
+   blockIdx.y, blockIdx.z, threadIdx.x, threadIdx.y, threadIdx.z);
+```
 ## Maximal Independent Set
 
 **NC** is a complexity class of problems that can be solved in polylogarithmic time on a PRAM computer with polynomial number of processors. *NC* problems can be thought of as the problems that can be effectively solved on a parallel computer. Obviously, *NC* is in *P*, because a polylogarithmic parallel program can be simulated by a sequential computer in polynomial time. The important, open question is whether *NC* = *P*. In other words, does there exists a problem that can be solved in polynomial time on a sequential machine, but can not be speeded up to polylogarithmic time on a parallel computer. Such a problem would be fundamentally sequential. An example of a problem that is believed to be fundamentally sequential is *Lexicographically First Maximal Independent Set* (LFMIS).
@@ -62,10 +69,10 @@ The *MIS* returned by the trivial algorithm is called *lexicographically first* 
 I ← ∅
 while True:
   S ← ∅
-  for all v in V do in parallel
+  for all v in V do in parallel (I)
     if (d(v) = 0) then add v to I and delete v from V
     else mark v with probability 1/ (2 * d(v))
-  for all (u, v) in E do in parallel
+  for all (u, v) in E do in parallel  (II)
     if both u and v are marked
       then unmark the lower degree vertex
   for all v in V do in parallel
@@ -77,8 +84,12 @@ while True:
 
 ### Exercises
 
-1. Implement the parallel algorithm for finding *MIS* on CUDA platform. Measure the speed-up over the sequential version (greedy algorithm).
+1. Implement the parallel algorithm for finding *MIS* on CUDA platform. Check the minimal graph size for which CUDA implementation is faster than LFMIS. You may simulate random number generator with some constants.
 
-2. Plot a diagram showing running time of your implementation versus graph size. What is the observed complexity of the implementation?
+**Hints**
 
-3. Can you verify graph size limit that your CUDA implementation is possible to handle efficiently?
+1. There is no other way of synchronization between blocks than launching seperate kernels sequentially. You may consider using kernels that: compute vertex degree (in a graph with some nodes removed), mark nodes with some probability (I), resolve conflicts (II), update graph, check if set is maximal.
+
+2. Start with small graphs of known structure (see `cycle` and `star` functions in the program skeleton). Verification is much easier on this graphs (it's easy to compute degrees and check if a set is independent). You may verify your partial results with files in `results` directory.
+
+3. Use function `fillPseudoRandoms` instead of a proper random generator to make debugging easier. You may need to assume some additional pseudo-randomness using threadIdx or iteration number (algorithm may fail if some node is never marked).

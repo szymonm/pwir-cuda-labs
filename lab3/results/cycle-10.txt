@@ -1,0 +1,11 @@
+Cycle(10)
+
+Computing result using CUDA Kernel...
+Degrees:
+Array(0:2, 1:2, 2:2, 3:2, 4:2, 5:2, 6:2, 7:2, 8:2, 9:2, )
+Marked:
+Array(0:1, 3:1, 5:1, 8:1, )
+Independent:
+Array(0:1, 3:1, 5:1, 8:1, )
+Checking computed result for correctness: Array(0:1, 3:1, 5:1, 8:1, )
+Result = PASS
