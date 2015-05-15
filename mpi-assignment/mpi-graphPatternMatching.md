@@ -1,0 +1,104 @@
+# MPI - Graph pattern matching
+## Assignment - PWIR 2015
+
+## Introduction
+Given directed graph `G=(V, E)` and directed, connected graph `P=(Q, S)` called pattern, *graph pattern matching* is a problem of finding all induced subgraphs of `G` isomorphic with pattern `P` called matches. Your task is to implement a distributed algorithm that solves the graph pattern matching problem using MPI system.
+
+You should evaluate performance of your solution and present results of the evaluation in a report.
+
+## Specification
+
+### Formal definitions
+Graph `G' = (V', E')` is a induced subgraph of `G = (V, E)` if `V'` is a subset of `V` and `E'` is a subset of `E` containing all edges between nodes in `V'`.
+
+We say that a subgraph `G'` of `G` is isomorphic with `P` if there exists a bijective function `h` from the nodes of `P` to the nodes of `G'` such that `(u, v)` is an edge in `P` if and only if `(h(u), h(v))` is an edge in `G'`.
+
+### Input
+Your program should accept 2 arguments from the command line. First is the path to the file containing graphs `G` and `P`, second is the path to the output file.
+
+Your program should read 2 graphs (`G` and `P`) from the input file separated with a blank line. Graph is encoded as a set of nodes with their outgoing edges. First line of a node encoding consists of two integers: node id `n` and number `k` of outgoing edges. Each of the following `k` lines contains a single integer - the target of an edge from node with id `n`. Hence, set of vertices of a graph is set sum of nodes with outgoing edges and nodes that are a target of some edge.
+
+You can assume that `P` is connected and has at most `10` nodes and that input encoding is correct.
+
+Example input:
+```
+1 3
+2
+3
+4
+2 2
+1
+3
+3 2
+1
+4
+4 1
+5
+
+7 1
+8
+8 1
+9
+9 1
+7
+```
+The input encodes `G = ({1, 2, 3, 4, 5}, {(1, 2), (1, 3), (1, 4), (2, 1), (2, 3), (3, 1), (3, 4), (4, 5)})` and `P = ({7, 8, 9), {(7, 8), (8, 9), (9, 7)})`.
+
+### Output
+Your program should print to the output file all induced subgraphs of G isomorphic with P in the following way: each line encode a single induced subgraph and is a list of node ids (separated with space) of the induced subgraph in incraesing order.
+
+For the input from the previous example, correct output is:
+```
+1 2 3
+```
+
+Your solution should be concise with reference pairs of input and output (see: TODO), although, the ordering of matches may be different.
+
+## Solution format
+Your solution should compile and run on `notos` cluster. Every processor should not use more than 512MB of RAM.
+
+Student should provide archive named with her user id (ex. `ab123456.tgz`), which, when unpacked, should create directory named with the user id, that contains following files:
+
+1. `report.pdf` - your report in the PDF format.
+2. `Makefile` - make file compiling your solution to `gpm-par.exe`. You are not allowed to change compilation configuration significantly (ex. flags).
+3. `gpm-seq-naive.c` - original file with sequential solution.
+4. `gpm-par.c` - your parallel implementation using MPI.
+
+## Report
+Report should contain at least:
+
+1. Detailed description of your solution.
+2. Tests and their results presented in a readable form.
+
+### Description
+Description part should contain general description of your idea, detailed specification of the algorithm including assumptions, used data structures, task allocation to processes, communication, optimalizations etc. Description should be clear and easy to understand. Consider enhancing it with diagrams and pseudo-code listings.
+
+### Tests
+You should perform both correctness and performance testing.
+
+Make sure to include following details:
+
+1. Description of test environment.
+2. Times of program execution for the two reference examples.
+
+You should measure time of graph distribution and pattern matching separately, but optimize for pattern matching efficiency. Your program should print distribution and computations times to the standard output (see sequential version for reference).
+
+You cannot assume that whole graph fits RAM memory of a single node. We will definitelly check your solutions on graphs that do not fit into space constraints. We will test your solution on high number of nodes and processors (ex. 128x4).
+
+## Grading
+
+* *6 points* - correctness of your solution (will be checked automatically, so make sure your solution is 100% concise with specification);
+* *4 points* - performance of your solution. You will receive 4 points, when your solution is correct and runs no more than (TODO);
+* *2 points* - report;
+* *3 points* - You will receive 3 points, when your solution is among top 10% of all students that send correct solution; 2 points, when your solution is among top 20% and 1 point, when you are in top 30%. We will test your results on real-life, scale-free graphs from [SNAP library](https://snap.stanford.edu/data/).
+
+## Literature
+
+Following articles may help you solve the problem.
+
+1. Ma S. et. al. *Distributed Graph Pattern Matching.*
+2. Fard A. et. al. *Distributed and scalable graph pattern matching: models and algorithms.*
+3. Fan W. *Graph Pattern Matching Revised for Social Network Analysis*.
+
+## FAQ
+Please, send additional questions to: `sm262956@mimuw.edu.pl`.
