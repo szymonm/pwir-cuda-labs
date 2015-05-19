@@ -16,12 +16,13 @@ We say that a subgraph `G'` of `G` is isomorphic with `P` if there exists a bije
 ### Input
 Your program should accept 2 arguments from the command line. First is the path to the file containing graphs `G` and `P`, second is the path to the output file.
 
-Your program should read 2 graphs (`G` and `P`) from the input file separated with a blank line. Graph is encoded as a set of nodes with their outgoing edges. First line of a node encoding consists of two integers: node id `n` and number `k` of outgoing edges. Each of the following `k` lines contains a single integer - the target of an edge from node with id `n`. Hence, set of vertices of a graph is set sum of nodes with outgoing edges and nodes that are a target of some edge.
+Your program should read 2 graphs (`G` and `P`) from the input file separated with a blank line. First line of graph encoding contains a single integer `N`. Nodes are numbered from `1` to `N` (hence `N` is also maximal node id). Next lines (until empty line) contain information about graph edges grouped by the source node. For a node, first line of the node's outgoing edges encoding consists of two integers: node id `n` and number `k` of outgoing edges. Each of the following `k` lines contains a single integer - the target of an edge from node with id `n`. Note that, if a node has no outgoing edges it is not stored on the list. Hence, set of vertices of a graph is set sum of nodes with outgoing edges and nodes that are a target of some edge.
 
-You can assume that `P` is connected and has at most `10` nodes and that input encoding is correct.
+You can assume that `P` is weakly connected and has at most `10` nodes and that input encoding is correct. You can also assume that `G` has no more than `10 000 000` vertices.
 
 Example input:
 ```
+5
 1 3
 2
 3
@@ -35,21 +36,24 @@ Example input:
 4 1
 5
 
-7 1
-8
-8 1
-9
-9 1
-7
+3
+1 1
+2
+2 1
+3
+3 1
+1
 ```
 The input encodes `G = ({1, 2, 3, 4, 5}, {(1, 2), (1, 3), (1, 4), (2, 1), (2, 3), (3, 1), (3, 4), (4, 5)})` and `P = ({7, 8, 9), {(7, 8), (8, 9), (9, 7)})`.
 
 ### Output
-Your program should print to the output file all induced subgraphs of G isomorphic with P in the following way: each line encode a single induced subgraph and is a list of node ids (separated with space) of the induced subgraph in incraesing order.
+Your program should print to the output file all induced subgraphs of G isomorphic with P in the following way: each line encode a single induced subgraph and is a list of node ids (separated with space) of the induced subgraph that map to consecutive nodes of the pattern graph (any ordering of induced subgraphs is allowed).
 
 For the input from the previous example, correct output is:
 ```
 1 2 3
+2 3 1
+3 1 2
 ```
 
 Your solution should be concise with reference pairs of input and output (see: TODO), although, the ordering of matches may be different.
@@ -61,7 +65,7 @@ Student should provide archive named with her user id (ex. `ab123456.tgz`), whic
 
 1. `report.pdf` - your report in the PDF format.
 2. `Makefile` - make file compiling your solution to `gpm-par.exe`. You are not allowed to change compilation configuration significantly (ex. flags).
-3. `gpm-seq-naive.c` - original file with sequential solution.
+3. `gpm-seq-naive.c` - original file with sequential solution (will be published before 2015/05/21)
 4. `gpm-par.c` - your parallel implementation using MPI.
 
 ## Report
@@ -87,10 +91,10 @@ You cannot assume that whole graph fits RAM memory of a single node. We will def
 
 ## Grading
 
-* *6 points* - correctness of your solution (will be checked automatically, so make sure your solution is 100% concise with specification);
-* *4 points* - performance of your solution. You will receive 4 points, when your solution is correct and runs no more than (TODO);
-* *2 points* - report;
-* *3 points* - You will receive 3 points, when your solution is among top 10% of all students that send correct solution; 2 points, when your solution is among top 20% and 1 point, when you are in top 30%. We will test your results on real-life, scale-free graphs from [SNAP library](https://snap.stanford.edu/data/).
+1. *6 points* - correctness of your solution (will be checked automatically, so make sure your solution is 100% concise with specification);
+2. *4 points* - performance of your solution. You will receive 4 points, when your solution is correct and runs at least as fast as our parallel benchmark solution - expected running times on 2 big graphs will be published later;
+3. *2 points* - report;
+4. *3 points* - You will receive 3 points, when your solution is among top 10% of all students that send correct solution; 2 points, when your solution is among top 20% and 1 point, when you are in top 30%. We will test your results on real-life, scale-free graphs from [SNAP library](https://snap.stanford.edu/data/).
 
 ## Literature
 
@@ -100,5 +104,24 @@ Following articles may help you solve the problem.
 2. Fard A. et. al. *Distributed and scalable graph pattern matching: models and algorithms.*
 3. Fan W. *Graph Pattern Matching Revised for Social Network Analysis*.
 
+## Assumptions
+
+1. You cannot assume that the whole graph fits into one nodes memory.
+2. You can assume that the number of patterns found is lower than `1 000 000`.
+
 ## FAQ
 Please, send additional questions to: `sm262956@mimuw.edu.pl`.
+
+**Czy krawędzie mogą się powtarzać?**
+Nie.
+
+**Czy można założyć, że każdy proces może trzymać listę krawędzi wychodzących kolejnych |V|/(liczba_procesów) wierzchołków?**
+Nie można.
+
+**Jaki będzie w testach maksymalny stosunek (|V| + |E|)/(liczba_procesów)? Może to mieć znaczenie, jeśli do tego, aby zmieścić się w pamięci ram 512MB trzeba będzie równomiernie ze względu na stopień wierzchołków rozdystrybuować dane.**
+Można założyć, że `(|V| + |E|)/(liczba_procesów) * sizeof(int) < 128 MB`.
+
+**Jakie testy zostaną udostępnione?**
+Zostaną udostępnione małe testy poprownościowe (podstawowa weryfikacja, czy Państwa rozwiązanie dobrze interpretuje wejście i wypisuje wyjście) oraz wymagania dotyczące czasu działania na 2 większych grafach (punkt 2.).
+
+Podczas sprawdzania zweryfikujemy Państwa rozwiązania na kolejnych testach poprawnościowych (punkt 1. oceniania) oraz zrobimy konkurs na grafach, które ujawnimy dopiero po uzyskaniu wszystkich rozwiązań.
