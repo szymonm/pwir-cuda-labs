@@ -11,7 +11,7 @@ You should evaluate performance of your solution and present results of the eval
 ### Formal definitions
 Graph `G' = (V', E')` is a induced subgraph of `G = (V, E)` if `V'` is a subset of `V` and `E'` is a subset of `E` containing all edges between nodes in `V'`.
 
-We say that a subgraph `G'` of `G` is isomorphic with `P` if there exists a bijective function `h` from the nodes of `P` to the nodes of `G'` such that `(u, v)` is an edge in `P` if and only if `(h(u), h(v))` is an edge in `G'`.
+We say that a subgraph `G'` of `G` is isomorphic with `P` if there exists a bijective function `h` from the nodes of `P` to the nodes of `G'` such that if `(u, v)` is an edge in `P` then `(h(u), h(v))` is an edge in `G'`.
 
 ### Input
 Your program should accept 2 arguments from the command line. First is the path to the file containing graphs `G` and `P`, second is the path to the output file.
