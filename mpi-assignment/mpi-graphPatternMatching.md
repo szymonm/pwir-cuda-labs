@@ -18,7 +18,9 @@ Your program should accept 2 arguments from the command line. First is the path 
 
 Your program should read 2 graphs (`G` and `P`) from the input file separated with a blank line. First line of graph encoding contains a single integer `N`. Nodes are numbered from `1` to `N` (hence `N` is also maximal node id). Next lines (until empty line) contain information about graph edges grouped by the source node. For a node, first line of the node's outgoing edges encoding consists of two integers: node id `n` and number `k` of outgoing edges. Each of the following `k` lines contains a single integer - the target of an edge from node with id `n`. Note that, if a node has no outgoing edges it is not stored on the list. Hence, set of vertices of a graph is set sum of nodes with outgoing edges and nodes that are a target of some edge.
 
-You can assume that `P` is weakly connected and has at most `10` nodes and that input encoding is correct. You can also assume that `G` has no more than `10 000 000` vertices.
+You can assume that `P` is weakly connected and has at most `10` nodes and that input encoding is correct. You can also assume that `G` has no more than `10 000 000` vertices and its diameter is smaller than `100`.
+
+There are no self loops in `P` and `G`.
 
 Example input:
 ```
@@ -56,7 +58,7 @@ For the input from the previous example, correct output is:
 3 1 2
 ```
 
-Your solution should be concise with reference pairs of input and output (see: TODO), although, the ordering of matches may be different.
+Your solution should be concise(after doing unix's `sort` on output file) with reference pairs of input and output (see: [here](https://github.com/szymonm/pwir-cuda-labs/tree/master/mpi-assignment/seq)), although, the ordering of matches may be different.
 
 ## Solution format
 Your solution should compile and run on `notos` cluster. Every processor should not use more than 512MB of RAM.
@@ -64,8 +66,8 @@ Your solution should compile and run on `notos` cluster. Every processor should 
 Student should provide archive named with her user id (ex. `ab123456.tgz`), which, when unpacked, should create directory named with the user id, that contains following files:
 
 1. `report.pdf` - your report in the PDF format.
-2. `Makefile` - make file compiling your solution to `gpm-par.exe`. You are not allowed to change compilation configuration significantly (ex. flags).
-3. `gpm-seq-naive.c` - original file with sequential solution (will be published before 2015/05/21)
+2. `Makefile` - make file compiling your solution to `gpm-par.exe`. You are not allowed to change compilation configuration significantly (ex. flags). You can make changes to allow C++ code.
+3. `gpm-seq-naive.c` - original file with sequential solution (see [here](https://github.com/szymonm/pwir-cuda-labs/tree/master/mpi-assignment/seq)) 
 4. `gpm-par.c` - your parallel implementation using MPI.
 
 ## Report
