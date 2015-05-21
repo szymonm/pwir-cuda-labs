@@ -93,7 +93,7 @@ You cannot assume that whole graph fits RAM memory of a single node. We will def
 
 ## Grading
 
-1. *6 points* - correctness of your solution (will be checked automatically, so make sure your solution is 100% concise with specification);
+1. *6 points* - correctness of your solution (will be checked automatically, so make sure your solution is 100% complaint with specification);
 2. *4 points* - performance of your solution. You will receive 4 points, when your solution is correct and runs at least as fast as our parallel benchmark solution - expected running times on 2 big graphs will be published later;
 3. *2 points* - report;
 4. *3 points* - You will receive 3 points, when your solution is among top 10% of all students that send correct solution; 2 points, when your solution is among top 20% and 1 point, when you are in top 30%. We will test your results on real-life, scale-free graphs from [SNAP library](https://snap.stanford.edu/data/).
