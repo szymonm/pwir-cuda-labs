@@ -2,15 +2,15 @@ CC=gcc
 FLAGS=-Wall
 
 HEADERS = common.h graph.h
-OBJECTS = common.o graph.o gpm-sec-naive.o
+OBJECTS = common.o graph.o gpm-seq-naive.o
 
-default: gpm-sec-naive
+default: gpm-seq-naive
 
 %.o: %.c $(HEADERS)
 	$(CC) $(FLAGS) -c $< -o $@
 
 
-gpm-sec-naive: $(OBJECTS)
+gpm-seq-naive: $(OBJECTS)
 	$(CC) $(OBJECTS) $(FLAGS) -o $@
 
 clean:
