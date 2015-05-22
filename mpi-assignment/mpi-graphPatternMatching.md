@@ -61,7 +61,7 @@ For the input from the previous example, correct output is:
 Your solution should be concise(after doing unix's `sort` on output file) with reference pairs of input and output (see: [here](https://github.com/szymonm/pwir-cuda-labs/tree/master/mpi-assignment/seq)), although, the ordering of matches may be different.
 
 ## Solution format
-Your solution should compile and run on `notos` cluster. Every processor should not use more than 512MB of RAM.
+Your solution should compile and run on `notos` cluster. Every process should not use more than 512MB of RAM.
 
 Student should provide archive named with her user id (ex. `ab123456.tgz`), which, when unpacked, should create directory named with the user id, that contains following files:
 
