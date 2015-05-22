@@ -5,10 +5,28 @@
 #ifndef MPI_ASSIGNMENT_SEQ_GRAPH_H
 #define MPI_ASSIGNMENT_SEQ_GRAPH_H
 
+/**
+ * Directed graph data structure.
+ */
 typedef struct {
+    /**
+     * For each node an array of outgoing edges.
+     */
     int** edges;
+
+    /**
+     * Out-degrees for nodes or -1 if the node is not in the graph.
+     */
     int* outDegrees;
+
+    /**
+     * Number of nodes.
+     */
     int nodes;
+
+    /**
+     * Maximal id of node that has outgoing edges.
+     */
     int maxNodeWithOutEdgesId;
 } Graph;
 

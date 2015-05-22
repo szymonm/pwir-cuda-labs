@@ -13,6 +13,11 @@
 
 typedef struct {
     int matchedNodes;
+
+    /**
+     * `matches[i] contains data graph node id of `i` node in pattern or -1 if the
+     * node is not yet matched.
+     */
     int matches[MAX_MATCH_SIZE + 1];
 } Match;
 
@@ -36,11 +41,7 @@ int graphToPatternNode(int node, Match* match) {
 }
 
 int patternToGraphNode(int node, Match* match) {
-    if (match->matchedNodes < node) {
-        return -1;
-    } else {
-        return match->matches[node];
-    }
+    return match->matches[node];
 }
 
 int containsEdge(int from, int to, Graph* graph) {
@@ -53,7 +54,7 @@ int containsEdge(int from, int to, Graph* graph) {
 }
 
 int matchContains(int nodeId, Match* match) {
-    for (int i = 1; i <= match->matchedNodes; i++) {
+    for (int i = 1; i <= MAX_MATCH_SIZE; i++) {
        if (match->matches[i] == nodeId) {
            return 1;
        }
@@ -61,13 +62,13 @@ int matchContains(int nodeId, Match* match) {
     return 0;
 }
 
-int checkNodeMatches(int nodeData, Graph* dataGraph, Graph* pattern, Graph* patternReversed, Match* match) {
+int checkNodeMatches(int nodeData, int nodePattern, Graph* dataGraph, Graph* pattern,
+                     Graph* patternReversed, Match* match) {
     if (matchContains(nodeData, match)) {
         return 0;
     }
-    int nodePattern = match->matchedNodes + 1;
 
-    // check out edges - every edge from the pattern must by in the graph
+    // check out edges - every edge from the pattern must be in the graph
     for (int i = 0; i < pattern->outDegrees[nodePattern]; i++) {
         int targetPatternNode = pattern->edges[nodePattern][i];
         int target = patternToGraphNode(targetPatternNode, match);
@@ -104,13 +105,13 @@ void printArray(int* arr, int len) {
     debug_print("]\n");
 }
 
-Match addNode(int node, Match* match) {
+Match addNode(int node, int patternNode, Match* match) {
     Match m;
     int i;
-    for (i = 0; i <= match->matchedNodes; i++) {
+    for (i = 0; i <= MAX_MATCH_SIZE; i++) {
         m.matches[i] = match->matches[i];
     }
-    m.matches[i] = node;
+    m.matches[patternNode] = node;
     m.matchedNodes = match->matchedNodes + 1;
     return m;
 }
@@ -129,8 +130,8 @@ void exploreMatch(Graph* dataGraph, Graph* pattern, Graph* patternReversed, Matc
     // for neighbors of parent we try to match the new node
     for (int i = 0; i < dataGraph->outDegrees[parentId]; i++) {
         int node = dataGraph->edges[parentId][i];
-        if (checkNodeMatches(node, dataGraph, pattern, patternReversed, &match)) {
-            Match new = addNode(node, &match);
+        if (checkNodeMatches(node, nextNodePatternId, dataGraph, pattern, patternReversed, &match)) {
+            Match new = addNode(node, nextNodePatternId, &match);
             exploreMatch(dataGraph, pattern, patternReversed, new, nodesMatchingOrder, parents, out);
         }
     }
@@ -193,6 +194,7 @@ int  main(int argc, char** argv)
     for (int i = 1; i <= dataGraph->nodes; i++) {
         if (dataGraph->outDegrees[i] > -1) {
             Match m;
+            memset(m.matches, -1, (MAX_MATCH_SIZE + 1) * sizeof(int));
             m.matchedNodes = 1;
             m.matches[1] = i;
             exploreMatch(dataGraph, pattern, patternReversed, m, dfsPatternNumbering,
@@ -209,6 +211,8 @@ int  main(int argc, char** argv)
     free(dfsPatternNumbering);
     free(dfsPatternParents);
     free(patternNodesOrdered);
+
+    fclose(out);
 
     return 0;
 }
