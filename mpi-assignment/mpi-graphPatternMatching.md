@@ -11,7 +11,7 @@ You should evaluate performance of your solution and present results of the eval
 ### Formal definitions
 Graph `G' = (V', E')` is a induced subgraph of `G = (V, E)` if `V'` is a subset of `V` and `E'` is a subset of `E` containing all edges between nodes in `V'`.
 
-We say that a subgraph `G'` of `G` is isomorphic with `P` if there exists a bijective function `h` from the nodes of `P` to the nodes of `G'` such that if `(u, v)` is an edge in `P` then `(h(u), h(v))` is an edge in `G'`.
+We say that an induced subgraph `G'` of `G` matches pattern `P` if there exists a bijective function `h` from the nodes of `P` to the nodes of `G'` such that if `(u, v)` is an edge in `P` then `(h(u), h(v))` is an edge in `G'`.
 
 ### Input
 Your program should accept 2 arguments from the command line. First is the path to the file containing graphs `G` and `P`, second is the path to the output file.
@@ -115,15 +115,28 @@ Following articles may help you solve the problem.
 Please, send additional questions to: `sm262956@mimuw.edu.pl`.
 
 **Czy krawędzie mogą się powtarzać?**
+
 Nie.
 
 **Czy można założyć, że każdy proces może trzymać listę krawędzi wychodzących kolejnych |V|/(liczba_procesów) wierzchołków?**
+
 Nie można.
 
 **Jaki będzie w testach maksymalny stosunek (|V| + |E|)/(liczba_procesów)? Może to mieć znaczenie, jeśli do tego, aby zmieścić się w pamięci ram 512MB trzeba będzie równomiernie ze względu na stopień wierzchołków rozdystrybuować dane.**
-Można założyć, że `(|V| + |E|)/(liczba_procesów) * sizeof(int) < 128 MB`.
+
+Można założyć, że `(|V| + |E|)/(liczba_procesów) * sizeof(int) < 64 MB`.
 
 **Jakie testy zostaną udostępnione?**
+
 Zostaną udostępnione małe testy poprownościowe (podstawowa weryfikacja, czy Państwa rozwiązanie dobrze interpretuje wejście i wypisuje wyjście) oraz wymagania dotyczące czasu działania na 2 większych grafach (punkt 2.).
 
 Podczas sprawdzania zweryfikujemy Państwa rozwiązania na kolejnych testach poprawnościowych (punkt 1. oceniania) oraz zrobimy konkurs na grafach, które ujawnimy dopiero po uzyskaniu wszystkich rozwiązań.
+
+**Czy można założyć, że program będzie uruchamiany z przynajmniej 4 procesami?**
+
+Tak
+
+**2. Jeśli chodzi o czas dystrybucji oraz czas wykonania - jak dokładnie zdefiniować, gdzie kończy się jedno, a zaczyna drugie? Przykładowo - przyjmijmy, że chciałbym transponować graf G, i żeby każdy proces miał przypisany pewien podzbiór wierzchołków, dla któego trzymałby wszystkie krawędzie wychodzące i wchodzące do tych wierzchołków. Czy rozesłanie tych informacji między procesami można zaliczyć do dystrybucji? Jak efektywne musi być to rozesłanie?**
+
+Tak, rozproszoną transpozycję grafu można uznać za dystrybucję. Będziemy oceniać czas łączny i czas obliczeń (ważniejszy będzie czas obliczeń). Powinno być rozsądne, ale nie oczekujemy wysublimowanego rozwiązania dystrybucji.
+
