@@ -39,6 +39,6 @@ void freeGraph(Graph* graph);
 Graph* reverseGraph(Graph* graph);
 
 int dfs(int node, int nextId, int parentNode, Graph* graph, Graph* reversed,
-        int* numbering, int* parent);
+        int* numbering, int* parent, int throughReverseEdge);
 
 #endif //MPI_ASSIGNMENT_SEQ_GRAPH_H

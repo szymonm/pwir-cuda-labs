@@ -140,20 +140,24 @@ Graph* reverseGraph(Graph* graph) {
 }
 
 int dfs(int node, int nextId, int parentNode, Graph* graph, Graph* reversed,
-        int* numbering, int* parent) {
+        int* numbering, int* parent, int viaReverseEdge) {
     int currentId = nextId;
-    numbering[node] = currentId;
+    if (viaReverseEdge) {
+        numbering[node] = -currentId;
+    } else {
+        numbering[node] = currentId;
+    }
     parent[node] = parentNode;
     for (int i = 0; i < graph->outDegrees[node]; i++) {
-        if (numbering[graph->edges[node][i]] == -1) {
+        if (numbering[graph->edges[node][i]] == 0) {
             currentId = dfs(graph->edges[node][i], currentId + 1, node, graph,
-                            reversed, numbering, parent);
+                            reversed, numbering, parent, 0);
         }
     }
     for (int i = 0; i < reversed->outDegrees[node]; i++) {
-        if (numbering[reversed->outDegrees[node]] == -1) {
+        if (numbering[reversed->edges[node][i]] == 0) {
             currentId = dfs(reversed->edges[node][i], currentId + 1, node, graph,
-                            reversed, numbering, parent);
+                            reversed, numbering, parent, 1);
         }
     }
     return currentId;

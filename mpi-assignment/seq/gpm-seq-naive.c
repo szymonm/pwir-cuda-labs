@@ -91,8 +91,12 @@ int checkNodeMatches(int nodeData, int nodePattern, Graph* dataGraph, Graph* pat
 
 void ordering(int* numbering, int* order, int len) {
     for (int i = 1; i <= len; i++) {
-        if (numbering[i] != -1) {
-            order[numbering[i]] = i;
+        if (numbering[i] != 0) {
+            if (numbering[i] > 0) {
+                order[numbering[i]] = i;
+            } else {
+                order[-numbering[i]] = -i;
+            }
         }
     }
 }
@@ -116,23 +120,34 @@ Match addNode(int node, int patternNode, Match* match) {
     return m;
 }
 
-void exploreMatch(Graph* dataGraph, Graph* pattern, Graph* patternReversed, Match match,
+void exploreMatch(Graph* dataGraph, Graph* dataReversed, Graph* pattern,
+                  Graph* patternReversed, Match match,
                   int* nodesMatchingOrder, int* parents, FILE* out) {
     if (match.matchedNodes == pattern->nodes) {
         printMatch(&match, out);
         return;
     }
 
+    int checkOutEdges = 1;
     int nextNodePatternId = nodesMatchingOrder[match.matchedNodes + 1];
+    if (nextNodePatternId < 0) {
+        nextNodePatternId = -nextNodePatternId;
+        checkOutEdges = 0;
+    }
     int nextNodeParentPatternId = parents[nextNodePatternId];
 
     int parentId = patternToGraphNode(nextNodeParentPatternId, &match);
+
+    // if the pattern node was visited in dfs via in edge, we use reversed graph to match it
+    Graph* g = (checkOutEdges ? dataGraph : dataReversed);
+
     // for neighbors of parent we try to match the new node
-    for (int i = 0; i < dataGraph->outDegrees[parentId]; i++) {
-        int node = dataGraph->edges[parentId][i];
+    for (int i = 0; i < g->outDegrees[parentId]; i++) {
+        int node = g->edges[parentId][i];
         if (checkNodeMatches(node, nextNodePatternId, dataGraph, pattern, patternReversed, &match)) {
             Match new = addNode(node, nextNodePatternId, &match);
-            exploreMatch(dataGraph, pattern, patternReversed, new, nodesMatchingOrder, parents, out);
+            exploreMatch(dataGraph, dataReversed, pattern, patternReversed,
+                         new, nodesMatchingOrder, parents, out);
         }
     }
 }
@@ -157,6 +172,8 @@ int  main(int argc, char** argv)
 
     Graph* dataGraph = readGraph(f);
 
+    Graph* dataReversed = reverseGraph(dataGraph);
+
     Graph* pattern = readGraph(f);
     fclose(f);
 
@@ -172,21 +189,21 @@ int  main(int argc, char** argv)
         printGraph(patternReversed);
 
     int* dfsPatternNumbering = malloc((pattern->nodes + 1) * sizeof(int));
-    memset(dfsPatternNumbering, -1, (pattern->nodes + 1) * sizeof(int));
+    memset(dfsPatternNumbering, 0, (pattern->nodes + 1) * sizeof(int));
 
     int* dfsPatternParents = malloc((pattern->nodes + 1) * sizeof(int));
-    dfs(1, 1, -1, pattern, patternReversed, dfsPatternNumbering, dfsPatternParents);
+    dfs(1, 1, -1, pattern, patternReversed, dfsPatternNumbering, dfsPatternParents, 0);
 
     debug_print("Numbering: ");
-    printArray(dfsPatternNumbering, pattern->nodes);
+    printArray(dfsPatternNumbering, pattern->nodes + 1);
     debug_print("Parent: ");
-    printArray(dfsPatternParents, pattern->nodes);
+    printArray(dfsPatternParents, pattern->nodes + 1);
 
-    int* patternNodesOrdered = malloc(pattern->nodes * sizeof(int));
+    int* patternNodesOrdered = malloc((pattern->nodes + 1) * sizeof(int));
 
-    ordering(dfsPatternNumbering, patternNodesOrdered, pattern->nodes);
+    ordering(dfsPatternNumbering, patternNodesOrdered, pattern->nodes + 1);
     debug_print("Ordering: ");
-    printArray(patternNodesOrdered, pattern->nodes);
+    printArray(patternNodesOrdered, pattern->nodes + 1);
 
     time_t distributionTime = time(NULL);
     printf("Distribution time[s]: %ld\n", (distributionTime - startTime));
@@ -197,7 +214,7 @@ int  main(int argc, char** argv)
             memset(m.matches, -1, (MAX_MATCH_SIZE + 1) * sizeof(int));
             m.matchedNodes = 1;
             m.matches[1] = i;
-            exploreMatch(dataGraph, pattern, patternReversed, m, dfsPatternNumbering,
+            exploreMatch(dataGraph, dataReversed, pattern, patternReversed, m, patternNodesOrdered,
                 dfsPatternParents, out);
         }
     }
@@ -206,6 +223,7 @@ int  main(int argc, char** argv)
     printf("Computations time[s]: %ld\n", (computationsTime - distributionTime));
 
     freeGraph(dataGraph);
+    freeGraph(dataReversed);
     freeGraph(pattern);
     freeGraph(patternReversed);
     free(dfsPatternNumbering);
