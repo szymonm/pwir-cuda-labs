@@ -2,7 +2,7 @@
 ## Assignment - PWIR 2015
 
 ## Introduction
-Given directed graph `G=(V, E)` and directed, connected graph `P=(Q, S)` called pattern, *graph pattern matching* is a problem of finding all induced subgraphs of `G` isomorphic with pattern `P` called matches. Your task is to implement a distributed algorithm that solves the graph pattern matching problem using MPI system.
+Given directed graph `G=(V, E)` and directed, connected graph `P=(Q, S)` called pattern, *graph pattern matching* is a problem of finding all subgraphs of `G` that match `P` called matches. Your task is to implement a distributed algorithm that solves the graph pattern matching problem using MPI system.
 
 You should evaluate performance of your solution and present results of the evaluation in a report.
 
@@ -49,7 +49,7 @@ Example input:
 The input encodes `G = ({1, 2, 3, 4, 5}, {(1, 2), (1, 3), (1, 4), (2, 1), (2, 3), (3, 1), (3, 4), (4, 5)})` and `P = ({7, 8, 9), {(7, 8), (8, 9), (9, 7)})`.
 
 ### Output
-Your program should print to the output file all induced subgraphs of G isomorphic with P in the following way: each line encode a single induced subgraph and is a list of node ids (separated with space) of the induced subgraph that map to consecutive nodes of the pattern graph (any ordering of induced subgraphs is allowed).
+Your program should print to the output file all bijective functions between an induced subgraph of `G` and `P` that match `P` in the following way: each line encode a single bijective function and is a list of node ids (separated with space) of the induced subgraph that map to consecutive nodes of the pattern graph (any ordering of induced subgraphs is allowed).
 
 For the input from the previous example, correct output is:
 ```
