@@ -16,7 +16,7 @@ We say that an induced subgraph `G'` of `G` matches pattern `P` if there exists 
 ### Input
 Your program should accept 2 arguments from the command line. First is the path to the file containing graphs `G` and `P`, second is the path to the output file.
 
-Your program should read 2 graphs (`G` and `P`) from the input file separated with a blank line. First line of graph encoding contains a single integer `N`. Nodes are numbered from `1` to `N` (hence `N` is also maximal node id). Next lines (until empty line) contain information about graph edges grouped by the source node. For a node, first line of the node's outgoing edges encoding consists of two integers: node id `n` and number `k` of outgoing edges. Each of the following `k` lines contains a single integer - the target of an edge from node with id `n`. Note that, if a node has no outgoing edges it is not stored on the list. Hence, set of vertices of a graph is set sum of nodes with outgoing edges and nodes that are a target of some edge.
+Your program should read 2 graphs (`G` and `P`) from the input file separated with a blank line. First line of graph encoding contains a single integer `N`. Nodes are numbered from `1` to `N` (hence `N` is also maximal node id). Next lines (until empty line) contain information about graph edges grouped by the source node. For a node, first line of the node's outgoing edges encoding consists of two integers: node id `n` and number `k` of outgoing edges. Each of the following `k` lines contains a single integer - the target of an edge from node with id `n`. The edges are sorted. Note that, if a node has no outgoing edges it is not stored on the list. Hence, set of vertices of a graph is set sum of nodes with outgoing edges and nodes that are a target of some edge.
 
 You can assume that `P` is weakly connected and has at most `10` nodes and that input encoding is correct. You can also assume that `G` has no more than `10 000 000` vertices and its diameter is smaller than `100`.
 
@@ -60,15 +60,21 @@ For the input from the previous example, correct output is:
 
 Your solution should be concise(after doing unix's `sort` on output file) with reference pairs of input and output (see: [here](https://github.com/szymonm/pwir-cuda-labs/tree/master/mpi-assignment/seq)), although, the ordering of matches may be different.
 
+You solution should print to the standard output information about time spent on graph distribution and pattern matching as the sequential version of the program:
+```
+Distribution time[s]: 12
+Computations time[s]: 4
+```
+
 ## Solution format
 Your solution should compile and run on `notos` cluster. Every process should not use more than 512MB of RAM.
 
-Student should provide archive named with her user id (ex. `ab123456.tgz`), which, when unpacked, should create directory named with the user id, that contains following files:
+Student should provide archive named with her user id (ex. `ab123456.tgz`), which, when unpacked, should create directory named with the user id, that contains at least following files:
 
 1. `report.pdf` - your report in the PDF format.
-2. `Makefile` - make file compiling your solution to `gpm-par.exe`. You are not allowed to change compilation configuration significantly (ex. flags). You can make changes to allow C++ code.
+2. `Makefile` - make file compiling your solution to `gpm-par.exe`.
 3. `gpm-seq-naive.c` - original file with sequential solution (see [here](https://github.com/szymonm/pwir-cuda-labs/tree/master/mpi-assignment/seq)) 
-4. `gpm-par.c` - your parallel implementation using MPI.
+4. `gpm-par.c` / `gpm-par.cpp` - your parallel implementation using MPI.
 
 ## Report
 Report should contain at least:
@@ -93,10 +99,18 @@ You cannot assume that whole graph fits RAM memory of a single node. We will def
 
 ## Grading
 
-1. *6 points* - correctness of your solution (will be checked automatically, so make sure your solution is 100% complaint with specification);
-2. *4 points* - performance of your solution. You will receive 4 points, when your solution is correct and runs at least as fast as our parallel benchmark solution - expected running times on 2 big graphs will be published later;
-3. *2 points* - report;
-4. *3 points* - You will receive 3 points, when your solution is among top 10% of all students that send correct solution; 2 points, when your solution is among top 20% and 1 point, when you are in top 30%. We will test your results on real-life, scale-free graphs from [SNAP library](https://snap.stanford.edu/data/).
+1. *0 - 6 points* - correctness of your solution (will be checked automatically, so make sure your solution is 100% complaint with specification). Tested on small graphs that have small number of partial matches.
+2. *0 - 4 points* - performance of your solution. You will receive the maximal 4 points, when your solution is correct and runs faster than specified in the table below:
+
+  File | Running time
+  --- | ---
+  [`cit-Patents.gph`](http://www.mimuw.edu.pl/~sm262956/mpi/cit-Patents.gph) | 30 s
+  [wiki-talk.gph](http://www.mimuw.edu.pl/~sm262956/mpi/cit-Patents.gph) | 1 min
+
+  Times are measured for 128x4 processors on `notos` cluster. You can download the graphs from directory [data](https://github.com/szymonm/pwir-cuda-labs/tree/master/mpi-assignment/data).
+
+3. *0 - 2 points* - report;
+4. *0 - 3 points* - You will receive 3 points, when your solution is among top 10% of all students that send correct solution; 2 points, when your solution is among top 20% and 1 point, when you are in top 30%. We will test your results on real-life, scale-free graphs from [SNAP library](https://snap.stanford.edu/data/).
 
 ## Literature
 
@@ -109,7 +123,7 @@ Following articles may help you solve the problem.
 ## Assumptions
 
 1. You cannot assume that the whole graph fits into one nodes memory.
-2. You can assume that the number of patterns found is lower than `1 000 000`.
+2. You can assume that the number of patterns found is lower than ~~1 000 000~~ `10 000 000`.
 
 ## FAQ
 Please, send additional questions to: `sm262956@mimuw.edu.pl`.
@@ -136,7 +150,18 @@ Podczas sprawdzania zweryfikujemy Państwa rozwiązania na kolejnych testach pop
 
 Tak
 
-**2. Jeśli chodzi o czas dystrybucji oraz czas wykonania - jak dokładnie zdefiniować, gdzie kończy się jedno, a zaczyna drugie? Przykładowo - przyjmijmy, że chciałbym transponować graf G, i żeby każdy proces miał przypisany pewien podzbiór wierzchołków, dla któego trzymałby wszystkie krawędzie wychodzące i wchodzące do tych wierzchołków. Czy rozesłanie tych informacji między procesami można zaliczyć do dystrybucji? Jak efektywne musi być to rozesłanie?**
+**Jeśli chodzi o czas dystrybucji oraz czas wykonania - jak dokładnie zdefiniować, gdzie kończy się jedno, a zaczyna drugie? Przykładowo - przyjmijmy, że chciałbym transponować graf G, i żeby każdy proces miał przypisany pewien podzbiór wierzchołków, dla któego trzymałby wszystkie krawędzie wychodzące i wchodzące do tych wierzchołków. Czy rozesłanie tych informacji między procesami można zaliczyć do dystrybucji? Jak efektywne musi być to rozesłanie?**
 
 Tak, rozproszoną transpozycję grafu można uznać za dystrybucję. Będziemy oceniać czas łączny i czas obliczeń (ważniejszy będzie czas obliczeń). Powinno być rozsądne, ale nie oczekujemy wysublimowanego rozwiązania dystrybucji.
 
+**Czy można założyć, że krawędzie na wejściu są posortowane?**
+
+Można.
+
+**Do kiedy liczymy czas dystrybucji?**
+
+Do momentu, w którym zaczynamy korzystać z patternu, którego wyszukujemy.
+
+**W jaki sposób będzie sprawdzane wymaganie na zużycie pamięci przez procesy?**
+
+Tym [skryptem](https://gist.github.com/netj/526585). 
