@@ -60,7 +60,7 @@ For the input from the previous example, correct output is:
 
 Your solution should be concise(after doing unix's `sort` on output file) with reference pairs of input and output (see: [here](https://github.com/szymonm/pwir-cuda-labs/tree/master/mpi-assignment/seq)), although, the ordering of matches may be different.
 
-You solution should print to the standard output information about time spent on graph distribution and pattern matching as the sequential version of the program:
+Your solution should print to the standard output information about time spent on graph distribution and pattern matching as the sequential version of the program:
 ```
 Distribution time[s]: 12
 Computations time[s]: 4
