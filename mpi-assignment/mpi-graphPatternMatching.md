@@ -105,7 +105,7 @@ You cannot assume that whole graph fits RAM memory of a single node. We will def
   File | Running time
   --- | ---
   [`cit-Patents.gph`](http://www.mimuw.edu.pl/~sm262956/mpi/cit-Patents.gph) | 30 s
-  [wiki-talk.gph](http://www.mimuw.edu.pl/~sm262956/mpi/cit-Patents.gph) | 1 min
+  [`wiki-talk.gph`](http://www.mimuw.edu.pl/~sm262956/mpi/wiki-talk.gph) | 1 min
 
   Times are measured for 128x4 processors on `notos` cluster. You can download the graphs from directory [data](https://github.com/szymonm/pwir-cuda-labs/tree/master/mpi-assignment/data).
 
