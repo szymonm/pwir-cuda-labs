@@ -165,3 +165,10 @@ Do momentu, w którym zaczynamy korzystać z patternu, którego wyszukujemy.
 **W jaki sposób będzie sprawdzane wymaganie na zużycie pamięci przez procesy?**
 
 Tym [skryptem](https://gist.github.com/netj/526585). 
+
+**Moje rozwiązanie wymaga założenia X. Czy mogę to założyć?**
+
+Jeśli Państwo uważają, że założenie X jest uzasadnione, rozwiązanie zadania bez niego jest niemożliwe (lub bardzo trudne), proszę koniecznie o tym napisać w raporcie wraz z uzasadnieniem.
+
+W razie wątpliwości proszę o kontakt mailem.
+
