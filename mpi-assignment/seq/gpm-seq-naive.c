@@ -90,7 +90,7 @@ int checkNodeMatches(int nodeData, int nodePattern, Graph* dataGraph, Graph* pat
 }
 
 void ordering(int* numbering, int* order, int len) {
-    for (int i = 1; i <= len; i++) {
+    for (int i = 1; i < len; i++) {
         if (numbering[i] != 0) {
             if (numbering[i] > 0) {
                 order[numbering[i]] = i;
